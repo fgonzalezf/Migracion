@@ -1,0 +1,20 @@
+﻿<ESRI.Configuration xmlns="http://schemas.esri.com/Desktop/AddIns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>Migracion_Geodatabase</Name>
+  <AddInID>{e7a85624-67a6-47e2-b682-e041d140dc5c}</AddInID>
+  <Description>Migracion de Geodatabase</Description>
+  <Version>1.0</Version>
+  <Image>Images\Migracion_Geodatabase.png</Image>
+  <Author>fgonzalez</Author>
+  <Company>IGAC</Company>
+  <Date>4/9/2016</Date>
+  <Targets>
+    <Target name="Desktop" version="10.3" />
+  </Targets>
+  <AddIn language="CLR4.5" library="Migracion_Geodatabase.dll" namespace="Migracion_Geodatabase">
+    <ArcCatalog>
+      <Commands>
+        <Button id="IGAC_Migracion_Geodatabase_Migracion" class="Migracion" message="Migracion Geodatabase e integracion de Geodatabase" caption="Migracion Geodatabase" tip="Migracion Geodatabase" category="Add-In Controls" image="Images\Migracion.png" />
+      </Commands>
+    </ArcCatalog>
+  </AddIn>
+</ESRI.Configuration>
