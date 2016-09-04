@@ -29,10 +29,10 @@
         private void InitializeComponent()
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.txtBoxGeodatabaseEntrada = new System.Windows.Forms.TextBox();
             this.lblGeodatabaseEntrada = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.txtBoxGeodatabaseSalida = new System.Windows.Forms.TextBox();
             this.btnGeodatabaseEntrada = new System.Windows.Forms.Button();
             this.btnGeodatabaseSalida = new System.Windows.Forms.Button();
             this.prgBarProceso = new System.Windows.Forms.ProgressBar();
@@ -57,9 +57,9 @@
             this.groupBox1.Controls.Add(this.btnGeodatabaseSalida);
             this.groupBox1.Controls.Add(this.btnGeodatabaseEntrada);
             this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Controls.Add(this.textBox2);
+            this.groupBox1.Controls.Add(this.txtBoxGeodatabaseSalida);
             this.groupBox1.Controls.Add(this.lblGeodatabaseEntrada);
-            this.groupBox1.Controls.Add(this.textBox1);
+            this.groupBox1.Controls.Add(this.txtBoxGeodatabaseEntrada);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(664, 210);
@@ -67,12 +67,12 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Migración Geodatabase";
             // 
-            // textBox1
+            // txtBoxGeodatabaseEntrada
             // 
-            this.textBox1.Location = new System.Drawing.Point(6, 40);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(581, 20);
-            this.textBox1.TabIndex = 0;
+            this.txtBoxGeodatabaseEntrada.Location = new System.Drawing.Point(6, 40);
+            this.txtBoxGeodatabaseEntrada.Name = "txtBoxGeodatabaseEntrada";
+            this.txtBoxGeodatabaseEntrada.Size = new System.Drawing.Size(581, 20);
+            this.txtBoxGeodatabaseEntrada.TabIndex = 0;
             // 
             // lblGeodatabaseEntrada
             // 
@@ -94,12 +94,12 @@
             this.label1.TabIndex = 3;
             this.label1.Text = "Geodatabase Salida (Personal, File ó SDE)";
             // 
-            // textBox2
+            // txtBoxGeodatabaseSalida
             // 
-            this.textBox2.Location = new System.Drawing.Point(3, 94);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(581, 20);
-            this.textBox2.TabIndex = 2;
+            this.txtBoxGeodatabaseSalida.Location = new System.Drawing.Point(3, 94);
+            this.txtBoxGeodatabaseSalida.Name = "txtBoxGeodatabaseSalida";
+            this.txtBoxGeodatabaseSalida.Size = new System.Drawing.Size(581, 20);
+            this.txtBoxGeodatabaseSalida.TabIndex = 2;
             // 
             // btnGeodatabaseEntrada
             // 
@@ -109,6 +109,7 @@
             this.btnGeodatabaseEntrada.TabIndex = 4;
             this.btnGeodatabaseEntrada.Text = "...";
             this.btnGeodatabaseEntrada.UseVisualStyleBackColor = true;
+            this.btnGeodatabaseEntrada.Click += new System.EventHandler(this.btnGeodatabaseEntrada_Click);
             // 
             // btnGeodatabaseSalida
             // 
@@ -118,6 +119,7 @@
             this.btnGeodatabaseSalida.TabIndex = 5;
             this.btnGeodatabaseSalida.Text = "...";
             this.btnGeodatabaseSalida.UseVisualStyleBackColor = true;
+            this.btnGeodatabaseSalida.Click += new System.EventHandler(this.btnGeodatabaseSalida_Click);
             // 
             // prgBarProceso
             // 
@@ -134,6 +136,7 @@
             this.btnMigrar.TabIndex = 7;
             this.btnMigrar.Text = "Migrar";
             this.btnMigrar.UseVisualStyleBackColor = true;
+            this.btnMigrar.Click += new System.EventHandler(this.btnMigrar_Click);
             // 
             // rdBtnAutocrear
             // 
@@ -215,8 +218,8 @@
         private System.Windows.Forms.Button btnGeodatabaseSalida;
         private System.Windows.Forms.Button btnGeodatabaseEntrada;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox txtBoxGeodatabaseSalida;
         private System.Windows.Forms.Label lblGeodatabaseEntrada;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox txtBoxGeodatabaseEntrada;
     }
 }

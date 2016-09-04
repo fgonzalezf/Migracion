@@ -15,7 +15,8 @@ namespace Migracion_Geodatabase
 
         protected override void OnClick()
         {
-            ventanaInicial = new formaMigracion();
+            formaMigracion VentanaInicial = new formaMigracion();
+            VentanaInicial.Show();
 
         }
 
