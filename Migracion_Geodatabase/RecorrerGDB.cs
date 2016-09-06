@@ -164,7 +164,7 @@ namespace Migracion_Geodatabase
                         else
                         {
                             string InFc = @Geodatabase + Path.DirectorySeparatorChar + pSdeDSName.Name;
-                            string OutFc = @GeodatabaseSalida + Path.DirectorySeparatorChar + pSdeDSName.Name;
+                            string OutFc = @GeodatabaseSalida + Path.DirectorySeparatorChar + EsquemaSDE + "." + pSdeDSName.Name;
                             string nameFc = pSdeDSName.Name;
                             string nameFcOut =EsquemaSDE+"."+pSdeDSName.Name;
                             try
@@ -226,8 +226,7 @@ namespace Migracion_Geodatabase
                         }
                         else
                         {
-                            if (EsquemaSDE != "")
-                            {
+                            
                                 pFeatureTable = pFeatureWorkspace.OpenTable(pSdeDSName.Name);
                                 string nameFc = pSdeDSName.Name;
                                 string nameFcOut =EsquemaSDE+"."+ pSdeDSName.Name;
@@ -252,7 +251,7 @@ namespace Migracion_Geodatabase
                                 }
 
 
-                            }
+                            
                         }
                         pSdeDSName = pEnumDSName.Next();
 
@@ -303,10 +302,9 @@ namespace Migracion_Geodatabase
                         }
                         pSdeDSName = pEnumDSName.Next();
                     }
-                    else if (pSdeDSName.Type == esriDatasetType.esriDTFeatureDataset && EsquemaSDE != "")
+                    else if (pSdeDSName.Type == esriDatasetType.esriDTFeatureDataset && EsquemaSDE.Length>0)
                     {
-                        if (pSdeDSName.Name == EsquemaSDE)
-                        {
+                            MessageBox.Show("entrando al ciclo");
                             pfeaturedataset = pFeatureWorkspace.OpenFeatureDataset(pSdeDSName.Name);
 
                             pEnumDataset = pfeaturedataset.Subsets;
@@ -351,7 +349,7 @@ namespace Migracion_Geodatabase
                                 pDataset = pEnumDataset.Next();
                             }
 
-                        }
+                        
                         pSdeDSName = pEnumDSName.Next();
                     }
                 }
@@ -361,10 +359,11 @@ namespace Migracion_Geodatabase
                 Ruta.Add(Ruta2);
 
                 return Ruta;
-            }
+            
+          }
             catch (Exception e)
             {
-                MessageBox.Show("Error recorriendo Geodatabase: " + e.Message + pDataset.Name);
+                MessageBox.Show("Error recorriendo Geodatabase: " + e.Message);
                 return null;
 
 

@@ -15,7 +15,7 @@ namespace Migracion_Geodatabase
         {
             InitializeComponent();
             //Valores combobox
-            cmbBoxEsquemaSDE.Items.Add("ADM25K");
+            cmbBoxEsquemaSDE.Items.Add("ADM25MIL");
             cmbBoxEsquemaSDE.Items.Add("ADMCIENMIL");
 
         }
@@ -61,6 +61,7 @@ namespace Migracion_Geodatabase
             if (txtBoxGeodatabaseSalida.Text.Contains(".sde"))
             {
                 ListaFeatuaresClass = arreglo.Recorrer(txtBoxGeodatabaseEntrada.Text, txtBoxGeodatabaseSalida.Text, cmbBoxEsquemaSDE.SelectedItem.ToString());
+                MessageBox.Show(cmbBoxEsquemaSDE.SelectedItem.ToString());
             }
             else 
             {
@@ -79,7 +80,7 @@ namespace Migracion_Geodatabase
                     
                 }
             }
-            MessageBox.Show(cmbBoxEsquemaSDE.SelectedItem.ToString());
+            
         }
 
         
