@@ -14,6 +14,10 @@ namespace Migracion_Geodatabase
         public formaMigracion()
         {
             InitializeComponent();
+            //Valores combobox
+            cmbBoxEsquemaSDE.Items.Add("ADM25K");
+            cmbBoxEsquemaSDE.Items.Add("ADMCIENMIL");
+
         }
 
         private void btnGeodatabaseEntrada_Click(object sender, EventArgs e)
@@ -31,9 +35,16 @@ namespace Migracion_Geodatabase
         private void btnGeodatabaseSalida_Click(object sender, EventArgs e)
         {
             Busqueda gdbEntrada = new Busqueda();
-            txtBoxGeodatabaseSalida.Text = gdbEntrada.BuscarEntrada();
+            txtBoxGeodatabaseSalida.Text = gdbEntrada.BuscarSalida();
 
-
+            if (txtBoxGeodatabaseSalida.Text.Contains(".sde"))
+            {
+                cmbBoxEsquemaSDE.Enabled=true;
+            }
+            else
+            {
+                cmbBoxEsquemaSDE.Enabled = false;
+            }
             if (txtBoxGeodatabaseEntrada.Text != "" && txtBoxGeodatabaseSalida.Text != "")
             {
                 btnMigrar.Enabled = true;
@@ -46,7 +57,15 @@ namespace Migracion_Geodatabase
         {
             RecorrerGDB arreglo = new RecorrerGDB();
             string Imprimir="Terminado";
-            List<List<string>> ListaFeatuaresClass= arreglo.Recorrer(txtBoxGeodatabaseEntrada.Text ,txtBoxGeodatabaseSalida.Text,"Todos");
+            List<List<string>> ListaFeatuaresClass=new List<List<string>>();
+            if (txtBoxGeodatabaseSalida.Text.Contains(".sde"))
+            {
+                ListaFeatuaresClass = arreglo.Recorrer(txtBoxGeodatabaseEntrada.Text, txtBoxGeodatabaseSalida.Text, cmbBoxEsquemaSDE.SelectedItem.ToString());
+            }
+            else 
+            {
+                ListaFeatuaresClass = arreglo.Recorrer(txtBoxGeodatabaseEntrada.Text, txtBoxGeodatabaseSalida.Text, "");
+            }
             List<string> Rutas_Entrada= ListaFeatuaresClass[0];
             List<string> Rutas_Salida= ListaFeatuaresClass[1];
             using (System.IO.StreamWriter file =
@@ -60,7 +79,7 @@ namespace Migracion_Geodatabase
                     
                 }
             }
-            MessageBox.Show(Imprimir);
+            MessageBox.Show(cmbBoxEsquemaSDE.SelectedItem.ToString());
         }
 
         
