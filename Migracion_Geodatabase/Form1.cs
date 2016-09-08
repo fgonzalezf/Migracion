@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.IO;
 
 namespace Migracion_Geodatabase
 {
@@ -69,18 +70,23 @@ namespace Migracion_Geodatabase
             }
             List<string> Rutas_Entrada= ListaFeatuaresClass[0];
             List<string> Rutas_Salida= ListaFeatuaresClass[1];
+            Append_Custom append = new Append_Custom();
             using (System.IO.StreamWriter file =
+            
             new System.IO.StreamWriter(@txtBoxGeodatabaseEntrada.Text+".txt"))
             {
                 for (int i = 0; i <  Rutas_Entrada.Count; i++)
                 {
                     // If the line doesn't contain the word 'Second', write the line to the file.
-                    
+                    append.InsertFeaturesUsingCursor(txtBoxGeodatabaseEntrada.Text + Path.DirectorySeparatorChar + Rutas_Entrada[i],
+                                                     txtBoxGeodatabaseSalida.Text + Path.DirectorySeparatorChar + Rutas_Salida[i]
+                        );
                         file.WriteLine(Rutas_Entrada[i] + "    ......      " +Rutas_Salida[i]);
+                        MessageBox.Show("Cargando" + Rutas_Entrada[i]);
                     
                 }
             }
-            
+            MessageBox.Show("Finalizado");
         }
 
         

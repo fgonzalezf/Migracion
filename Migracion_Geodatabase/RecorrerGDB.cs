@@ -304,7 +304,7 @@ namespace Migracion_Geodatabase
                     }
                     else if (pSdeDSName.Type == esriDatasetType.esriDTFeatureDataset && EsquemaSDE.Length>0)
                     {
-                            MessageBox.Show("entrando al ciclo");
+                            //MessageBox.Show("entrando al ciclo");
                             pfeaturedataset = pFeatureWorkspace.OpenFeatureDataset(pSdeDSName.Name);
 
                             pEnumDataset = pfeaturedataset.Subsets;
