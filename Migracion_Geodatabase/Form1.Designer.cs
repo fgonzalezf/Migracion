@@ -29,24 +29,28 @@
         private void InitializeComponent()
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.txtBoxGeodatabaseEntrada = new System.Windows.Forms.TextBox();
-            this.lblGeodatabaseEntrada = new System.Windows.Forms.Label();
+            this.lblProgreso = new System.Windows.Forms.Label();
+            this.rdBtnSinRelacionarAnotaciones = new System.Windows.Forms.RadioButton();
+            this.rdBtnRelacionandoAnotaciones = new System.Windows.Forms.RadioButton();
+            this.rdBtnSinAnotaciones = new System.Windows.Forms.RadioButton();
+            this.rdBtnAutocrear = new System.Windows.Forms.RadioButton();
+            this.btnMigrar = new System.Windows.Forms.Button();
+            this.prgBarProceso = new System.Windows.Forms.ProgressBar();
+            this.btnGeodatabaseSalida = new System.Windows.Forms.Button();
+            this.btnGeodatabaseEntrada = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.txtBoxGeodatabaseSalida = new System.Windows.Forms.TextBox();
-            this.btnGeodatabaseEntrada = new System.Windows.Forms.Button();
-            this.btnGeodatabaseSalida = new System.Windows.Forms.Button();
-            this.prgBarProceso = new System.Windows.Forms.ProgressBar();
-            this.btnMigrar = new System.Windows.Forms.Button();
-            this.rdBtnAutocrear = new System.Windows.Forms.RadioButton();
-            this.rdBtnSinAnotaciones = new System.Windows.Forms.RadioButton();
-            this.rdBtnRelacionandoAnotaciones = new System.Windows.Forms.RadioButton();
-            this.rdBtnSinRelacionarAnotaciones = new System.Windows.Forms.RadioButton();
-            this.lblProgreso = new System.Windows.Forms.Label();
+            this.lblGeodatabaseEntrada = new System.Windows.Forms.Label();
+            this.txtBoxGeodatabaseEntrada = new System.Windows.Forms.TextBox();
+            this.lblEsquemaSDE = new System.Windows.Forms.Label();
+            this.cmbBoxEsquemaSDE = new System.Windows.Forms.ComboBox();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.cmbBoxEsquemaSDE);
+            this.groupBox1.Controls.Add(this.lblEsquemaSDE);
             this.groupBox1.Controls.Add(this.lblProgreso);
             this.groupBox1.Controls.Add(this.rdBtnSinRelacionarAnotaciones);
             this.groupBox1.Controls.Add(this.rdBtnRelacionandoAnotaciones);
@@ -62,27 +66,101 @@
             this.groupBox1.Controls.Add(this.txtBoxGeodatabaseEntrada);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(664, 210);
+            this.groupBox1.Size = new System.Drawing.Size(664, 223);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Migración Geodatabase";
             // 
-            // txtBoxGeodatabaseEntrada
+            // lblProgreso
             // 
-            this.txtBoxGeodatabaseEntrada.Location = new System.Drawing.Point(6, 40);
-            this.txtBoxGeodatabaseEntrada.Name = "txtBoxGeodatabaseEntrada";
-            this.txtBoxGeodatabaseEntrada.Size = new System.Drawing.Size(581, 20);
-            this.txtBoxGeodatabaseEntrada.TabIndex = 0;
+            this.lblProgreso.AutoSize = true;
+            this.lblProgreso.Location = new System.Drawing.Point(6, 168);
+            this.lblProgreso.Name = "lblProgreso";
+            this.lblProgreso.Size = new System.Drawing.Size(16, 13);
+            this.lblProgreso.TabIndex = 12;
+            this.lblProgreso.Text = "...";
             // 
-            // lblGeodatabaseEntrada
+            // rdBtnSinRelacionarAnotaciones
             // 
-            this.lblGeodatabaseEntrada.AutoSize = true;
-            this.lblGeodatabaseEntrada.ImageAlign = System.Drawing.ContentAlignment.BottomRight;
-            this.lblGeodatabaseEntrada.Location = new System.Drawing.Point(6, 20);
-            this.lblGeodatabaseEntrada.Name = "lblGeodatabaseEntrada";
-            this.lblGeodatabaseEntrada.Size = new System.Drawing.Size(189, 13);
-            this.lblGeodatabaseEntrada.TabIndex = 1;
-            this.lblGeodatabaseEntrada.Text = "Geodatabase Entrada (Personal o File)";
+            this.rdBtnSinRelacionarAnotaciones.AutoSize = true;
+            this.rdBtnSinRelacionarAnotaciones.Location = new System.Drawing.Point(431, 150);
+            this.rdBtnSinRelacionarAnotaciones.Name = "rdBtnSinRelacionarAnotaciones";
+            this.rdBtnSinRelacionarAnotaciones.Size = new System.Drawing.Size(156, 17);
+            this.rdBtnSinRelacionarAnotaciones.TabIndex = 11;
+            this.rdBtnSinRelacionarAnotaciones.TabStop = true;
+            this.rdBtnSinRelacionarAnotaciones.Text = "Sin Relacionar Anotaciones";
+            this.rdBtnSinRelacionarAnotaciones.UseVisualStyleBackColor = true;
+            // 
+            // rdBtnRelacionandoAnotaciones
+            // 
+            this.rdBtnRelacionandoAnotaciones.AutoSize = true;
+            this.rdBtnRelacionandoAnotaciones.Location = new System.Drawing.Point(267, 150);
+            this.rdBtnRelacionandoAnotaciones.Name = "rdBtnRelacionandoAnotaciones";
+            this.rdBtnRelacionandoAnotaciones.Size = new System.Drawing.Size(156, 17);
+            this.rdBtnRelacionandoAnotaciones.TabIndex = 10;
+            this.rdBtnRelacionandoAnotaciones.TabStop = true;
+            this.rdBtnRelacionandoAnotaciones.Text = "Relacionando Anotaciones ";
+            this.rdBtnRelacionandoAnotaciones.UseVisualStyleBackColor = true;
+            // 
+            // rdBtnSinAnotaciones
+            // 
+            this.rdBtnSinAnotaciones.AutoSize = true;
+            this.rdBtnSinAnotaciones.Location = new System.Drawing.Point(151, 150);
+            this.rdBtnSinAnotaciones.Name = "rdBtnSinAnotaciones";
+            this.rdBtnSinAnotaciones.Size = new System.Drawing.Size(102, 17);
+            this.rdBtnSinAnotaciones.TabIndex = 9;
+            this.rdBtnSinAnotaciones.TabStop = true;
+            this.rdBtnSinAnotaciones.Text = "Sin Anotaciones";
+            this.rdBtnSinAnotaciones.UseVisualStyleBackColor = true;
+            // 
+            // rdBtnAutocrear
+            // 
+            this.rdBtnAutocrear.AutoSize = true;
+            this.rdBtnAutocrear.Location = new System.Drawing.Point(9, 150);
+            this.rdBtnAutocrear.Name = "rdBtnAutocrear";
+            this.rdBtnAutocrear.Size = new System.Drawing.Size(133, 17);
+            this.rdBtnAutocrear.TabIndex = 8;
+            this.rdBtnAutocrear.TabStop = true;
+            this.rdBtnAutocrear.Text = "Autocrear Anotaciones";
+            this.rdBtnAutocrear.UseVisualStyleBackColor = true;
+            // 
+            // btnMigrar
+            // 
+            this.btnMigrar.Enabled = false;
+            this.btnMigrar.Location = new System.Drawing.Point(593, 191);
+            this.btnMigrar.Name = "btnMigrar";
+            this.btnMigrar.Size = new System.Drawing.Size(51, 23);
+            this.btnMigrar.TabIndex = 7;
+            this.btnMigrar.Text = "Migrar";
+            this.btnMigrar.UseVisualStyleBackColor = true;
+            this.btnMigrar.Click += new System.EventHandler(this.btnMigrar_Click);
+            // 
+            // prgBarProceso
+            // 
+            this.prgBarProceso.Location = new System.Drawing.Point(9, 193);
+            this.prgBarProceso.Name = "prgBarProceso";
+            this.prgBarProceso.Size = new System.Drawing.Size(575, 23);
+            this.prgBarProceso.TabIndex = 6;
+            // 
+            // btnGeodatabaseSalida
+            // 
+            this.btnGeodatabaseSalida.Location = new System.Drawing.Point(593, 94);
+            this.btnGeodatabaseSalida.Name = "btnGeodatabaseSalida";
+            this.btnGeodatabaseSalida.Size = new System.Drawing.Size(51, 23);
+            this.btnGeodatabaseSalida.TabIndex = 5;
+            this.btnGeodatabaseSalida.Text = "...";
+            this.btnGeodatabaseSalida.UseVisualStyleBackColor = true;
+            this.btnGeodatabaseSalida.Click += new System.EventHandler(this.btnGeodatabaseSalida_Click);
+            // 
+            // btnGeodatabaseEntrada
+            // 
+            this.btnGeodatabaseEntrada.Location = new System.Drawing.Point(593, 40);
+            this.btnGeodatabaseEntrada.Name = "btnGeodatabaseEntrada";
+            this.btnGeodatabaseEntrada.Size = new System.Drawing.Size(51, 23);
+            this.btnGeodatabaseEntrada.TabIndex = 4;
+            this.btnGeodatabaseEntrada.Text = "...";
+            this.btnGeodatabaseEntrada.UseVisualStyleBackColor = true;
+            this.btnGeodatabaseEntrada.Click += new System.EventHandler(this.btnGeodatabaseEntrada_Click);
             // 
             // label1
             // 
@@ -101,101 +179,46 @@
             this.txtBoxGeodatabaseSalida.Size = new System.Drawing.Size(581, 20);
             this.txtBoxGeodatabaseSalida.TabIndex = 2;
             // 
-            // btnGeodatabaseEntrada
+            // lblGeodatabaseEntrada
             // 
-            this.btnGeodatabaseEntrada.Location = new System.Drawing.Point(593, 40);
-            this.btnGeodatabaseEntrada.Name = "btnGeodatabaseEntrada";
-            this.btnGeodatabaseEntrada.Size = new System.Drawing.Size(51, 23);
-            this.btnGeodatabaseEntrada.TabIndex = 4;
-            this.btnGeodatabaseEntrada.Text = "...";
-            this.btnGeodatabaseEntrada.UseVisualStyleBackColor = true;
-            this.btnGeodatabaseEntrada.Click += new System.EventHandler(this.btnGeodatabaseEntrada_Click);
+            this.lblGeodatabaseEntrada.AutoSize = true;
+            this.lblGeodatabaseEntrada.ImageAlign = System.Drawing.ContentAlignment.BottomRight;
+            this.lblGeodatabaseEntrada.Location = new System.Drawing.Point(6, 20);
+            this.lblGeodatabaseEntrada.Name = "lblGeodatabaseEntrada";
+            this.lblGeodatabaseEntrada.Size = new System.Drawing.Size(189, 13);
+            this.lblGeodatabaseEntrada.TabIndex = 1;
+            this.lblGeodatabaseEntrada.Text = "Geodatabase Entrada (Personal o File)";
             // 
-            // btnGeodatabaseSalida
+            // txtBoxGeodatabaseEntrada
             // 
-            this.btnGeodatabaseSalida.Location = new System.Drawing.Point(593, 94);
-            this.btnGeodatabaseSalida.Name = "btnGeodatabaseSalida";
-            this.btnGeodatabaseSalida.Size = new System.Drawing.Size(51, 23);
-            this.btnGeodatabaseSalida.TabIndex = 5;
-            this.btnGeodatabaseSalida.Text = "...";
-            this.btnGeodatabaseSalida.UseVisualStyleBackColor = true;
-            this.btnGeodatabaseSalida.Click += new System.EventHandler(this.btnGeodatabaseSalida_Click);
+            this.txtBoxGeodatabaseEntrada.Location = new System.Drawing.Point(6, 40);
+            this.txtBoxGeodatabaseEntrada.Name = "txtBoxGeodatabaseEntrada";
+            this.txtBoxGeodatabaseEntrada.Size = new System.Drawing.Size(581, 20);
+            this.txtBoxGeodatabaseEntrada.TabIndex = 0;
             // 
-            // prgBarProceso
+            // lblEsquemaSDE
             // 
-            this.prgBarProceso.Location = new System.Drawing.Point(9, 178);
-            this.prgBarProceso.Name = "prgBarProceso";
-            this.prgBarProceso.Size = new System.Drawing.Size(575, 23);
-            this.prgBarProceso.TabIndex = 6;
+            this.lblEsquemaSDE.AutoSize = true;
+            this.lblEsquemaSDE.Location = new System.Drawing.Point(3, 125);
+            this.lblEsquemaSDE.Name = "lblEsquemaSDE";
+            this.lblEsquemaSDE.Size = new System.Drawing.Size(76, 13);
+            this.lblEsquemaSDE.TabIndex = 13;
+            this.lblEsquemaSDE.Text = "Esquema SDE";
             // 
-            // btnMigrar
+            // cmbBoxEsquemaSDE
             // 
-            this.btnMigrar.Location = new System.Drawing.Point(593, 177);
-            this.btnMigrar.Name = "btnMigrar";
-            this.btnMigrar.Size = new System.Drawing.Size(51, 23);
-            this.btnMigrar.TabIndex = 7;
-            this.btnMigrar.Text = "Migrar";
-            this.btnMigrar.UseVisualStyleBackColor = true;
-            this.btnMigrar.Click += new System.EventHandler(this.btnMigrar_Click);
-            // 
-            // rdBtnAutocrear
-            // 
-            this.rdBtnAutocrear.AutoSize = true;
-            this.rdBtnAutocrear.Location = new System.Drawing.Point(9, 121);
-            this.rdBtnAutocrear.Name = "rdBtnAutocrear";
-            this.rdBtnAutocrear.Size = new System.Drawing.Size(133, 17);
-            this.rdBtnAutocrear.TabIndex = 8;
-            this.rdBtnAutocrear.TabStop = true;
-            this.rdBtnAutocrear.Text = "Autocrear Anotaciones";
-            this.rdBtnAutocrear.UseVisualStyleBackColor = true;
-            // 
-            // rdBtnSinAnotaciones
-            // 
-            this.rdBtnSinAnotaciones.AutoSize = true;
-            this.rdBtnSinAnotaciones.Location = new System.Drawing.Point(151, 121);
-            this.rdBtnSinAnotaciones.Name = "rdBtnSinAnotaciones";
-            this.rdBtnSinAnotaciones.Size = new System.Drawing.Size(102, 17);
-            this.rdBtnSinAnotaciones.TabIndex = 9;
-            this.rdBtnSinAnotaciones.TabStop = true;
-            this.rdBtnSinAnotaciones.Text = "Sin Anotaciones";
-            this.rdBtnSinAnotaciones.UseVisualStyleBackColor = true;
-            // 
-            // rdBtnRelacionandoAnotaciones
-            // 
-            this.rdBtnRelacionandoAnotaciones.AutoSize = true;
-            this.rdBtnRelacionandoAnotaciones.Location = new System.Drawing.Point(267, 121);
-            this.rdBtnRelacionandoAnotaciones.Name = "rdBtnRelacionandoAnotaciones";
-            this.rdBtnRelacionandoAnotaciones.Size = new System.Drawing.Size(156, 17);
-            this.rdBtnRelacionandoAnotaciones.TabIndex = 10;
-            this.rdBtnRelacionandoAnotaciones.TabStop = true;
-            this.rdBtnRelacionandoAnotaciones.Text = "Relacionando Anotaciones ";
-            this.rdBtnRelacionandoAnotaciones.UseVisualStyleBackColor = true;
-            // 
-            // rdBtnSinRelacionarAnotaciones
-            // 
-            this.rdBtnSinRelacionarAnotaciones.AutoSize = true;
-            this.rdBtnSinRelacionarAnotaciones.Location = new System.Drawing.Point(431, 121);
-            this.rdBtnSinRelacionarAnotaciones.Name = "rdBtnSinRelacionarAnotaciones";
-            this.rdBtnSinRelacionarAnotaciones.Size = new System.Drawing.Size(156, 17);
-            this.rdBtnSinRelacionarAnotaciones.TabIndex = 11;
-            this.rdBtnSinRelacionarAnotaciones.TabStop = true;
-            this.rdBtnSinRelacionarAnotaciones.Text = "Sin Relacionar Anotaciones";
-            this.rdBtnSinRelacionarAnotaciones.UseVisualStyleBackColor = true;
-            // 
-            // lblProgreso
-            // 
-            this.lblProgreso.AutoSize = true;
-            this.lblProgreso.Location = new System.Drawing.Point(6, 153);
-            this.lblProgreso.Name = "lblProgreso";
-            this.lblProgreso.Size = new System.Drawing.Size(16, 13);
-            this.lblProgreso.TabIndex = 12;
-            this.lblProgreso.Text = "...";
+            this.cmbBoxEsquemaSDE.Enabled = false;
+            this.cmbBoxEsquemaSDE.FormattingEnabled = true;
+            this.cmbBoxEsquemaSDE.Location = new System.Drawing.Point(95, 120);
+            this.cmbBoxEsquemaSDE.Name = "cmbBoxEsquemaSDE";
+            this.cmbBoxEsquemaSDE.Size = new System.Drawing.Size(185, 21);
+            this.cmbBoxEsquemaSDE.TabIndex = 14;
             // 
             // formaMigracion
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(688, 234);
+            this.ClientSize = new System.Drawing.Size(688, 247);
             this.Controls.Add(this.groupBox1);
             this.Name = "formaMigracion";
             this.Text = "Migración Geodatabase IGAC V1";
@@ -221,5 +244,7 @@
         private System.Windows.Forms.TextBox txtBoxGeodatabaseSalida;
         private System.Windows.Forms.Label lblGeodatabaseEntrada;
         private System.Windows.Forms.TextBox txtBoxGeodatabaseEntrada;
+        private System.Windows.Forms.ComboBox cmbBoxEsquemaSDE;
+        private System.Windows.Forms.Label lblEsquemaSDE;
     }
 }

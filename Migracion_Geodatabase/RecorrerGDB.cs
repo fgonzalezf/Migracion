@@ -30,6 +30,8 @@ namespace Migracion_Geodatabase
         IGPUtilities pGputility;
         IFeatureClass pFeatureClass;
         IFeatureClass pFeatureClassout;
+        ITable pFeatureTable;
+        ITable pFeatureTableout;
 
 
         public List<string> RecorrerDatasets(string Geodatabase, string GeodatabaseSalida)
@@ -74,10 +76,6 @@ namespace Migracion_Geodatabase
 
                         }
 
-
-
-
-
                     }
                     pSdeDSName = pEnumDSName.Next();
                 }
@@ -98,7 +96,7 @@ namespace Migracion_Geodatabase
 
 
 
-        public List<List<string>> Recorrer(string Geodatabase, string GeodatabaseSalida, string DatasetUnico)
+        public List<List<string>> Recorrer(string Geodatabase, string GeodatabaseSalida, string EsquemaSDE)
         {
 
             List<string> Ruta1 = new List<string>();
@@ -133,10 +131,21 @@ namespace Migracion_Geodatabase
 
                     if (pSdeDSName.Type == esriDatasetType.esriDTFeatureClass)
                     {
-                        if (DatasetUnico == "Todos")
+                        pFeatureClass = pFeatureWorkspace.OpenFeatureClass(pSdeDSName.Name);
+                        if (EsquemaSDE == "")
                         {
-                            pFeatureClass = pFeatureWorkspace.OpenFeatureClass(pSdeDSName.Name);
+                            string InFc = @Geodatabase + Path.DirectorySeparatorChar + pSdeDSName.Name;
+                            string OutFc = @GeodatabaseSalida + Path.DirectorySeparatorChar + pSdeDSName.Name;
                             string nameFc = pSdeDSName.Name;
+                            try
+                            {
+                                pFeatureClassout = pGputility.OpenFeatureClassFromString(OutFc);
+                            }
+                            catch (Exception ex)
+                            {
+                                pFeatureClassout = null;
+                            }
+    
                             if (pFeatureClass.FeatureCount(null) > 0)
                             {
                                 if (pFeatureClassout != null)
@@ -152,11 +161,102 @@ namespace Migracion_Geodatabase
                                 }
                             }
                         }
+                        else
+                        {
+                            string InFc = @Geodatabase + Path.DirectorySeparatorChar + pSdeDSName.Name;
+                            string OutFc = @GeodatabaseSalida + Path.DirectorySeparatorChar + EsquemaSDE + "." + pSdeDSName.Name;
+                            string nameFc = pSdeDSName.Name;
+                            string nameFcOut =EsquemaSDE+"."+pSdeDSName.Name;
+                            try
+                            {
+                                pFeatureClassout = pGputility.OpenFeatureClassFromString(OutFc);
+                            }
+                            catch (Exception ex)
+                            {
+                                pFeatureClassout = null;
+                            }
+
+                            if (pFeatureClass.FeatureCount(null) > 0)
+                            {
+                                if (pFeatureClassout != null)
+                                {
+                                    Ruta1.Add(nameFc);
+                                    Ruta2.Add(nameFcOut);
+
+                                }
+                                else
+                                {
+                                    Ruta1.Add(nameFc);
+                                    Ruta2.Add("...");
+                                }
+                            }
+
+                        }
                         pSdeDSName = pEnumDSName.Next();
 
 
                     }
-                    else if (pSdeDSName.Type == esriDatasetType.esriDTFeatureDataset && DatasetUnico == "Todos")
+                    else if (pSdeDSName.Type == esriDatasetType.esriDTTable)
+                    {
+                        if (EsquemaSDE == "")
+                        {
+                            pFeatureTable = pFeatureWorkspace.OpenTable(pSdeDSName.Name);
+                            string nameFc = pSdeDSName.Name;
+                            string InFc = @Geodatabase + Path.DirectorySeparatorChar + pSdeDSName.Name;
+                            string OutFc = @GeodatabaseSalida + Path.DirectorySeparatorChar + pSdeDSName.Name;
+                            
+
+                            if (pFeatureTable.RowCount(null) > 0)
+                            {
+                                pFeatureTableout = pGputility.OpenTableFromString(OutFc);
+                                if (pFeatureClassout != null)
+                                {
+                                    Ruta1.Add(nameFc);
+                                    Ruta2.Add(nameFc);
+
+                                }
+                                else
+                                {
+                                    Ruta1.Add(nameFc);
+                                    Ruta2.Add("...");
+                                }
+                            }
+
+
+                        }
+                        else
+                        {
+                            
+                                pFeatureTable = pFeatureWorkspace.OpenTable(pSdeDSName.Name);
+                                string nameFc = pSdeDSName.Name;
+                                string nameFcOut =EsquemaSDE+"."+ pSdeDSName.Name;
+                                string InFc = @Geodatabase + Path.DirectorySeparatorChar + pSdeDSName.Name;
+                                string OutFc = @GeodatabaseSalida + Path.DirectorySeparatorChar +EsquemaSDE+"."+ pSdeDSName.Name;
+
+
+                                if (pFeatureTable.RowCount(null) > 0)
+                                {
+                                    pFeatureTableout = pGputility.OpenTableFromString(OutFc);
+                                    if (pFeatureTableout != null)
+                                    {
+                                        Ruta1.Add(nameFc);
+                                        Ruta2.Add(nameFcOut);
+
+                                    }
+                                    else
+                                    {
+                                        Ruta1.Add(nameFc);
+                                        Ruta2.Add("...");
+                                    }
+                                }
+
+
+                            
+                        }
+                        pSdeDSName = pEnumDSName.Next();
+
+                    }
+                    else if (pSdeDSName.Type == esriDatasetType.esriDTFeatureDataset && EsquemaSDE == "")
                     {
                         pfeaturedataset = pFeatureWorkspace.OpenFeatureDataset(pSdeDSName.Name);
 
@@ -202,10 +302,9 @@ namespace Migracion_Geodatabase
                         }
                         pSdeDSName = pEnumDSName.Next();
                     }
-                    else if (pSdeDSName.Type == esriDatasetType.esriDTFeatureDataset && DatasetUnico != "Todos")
+                    else if (pSdeDSName.Type == esriDatasetType.esriDTFeatureDataset && EsquemaSDE.Length>0)
                     {
-                        if (pSdeDSName.Name == DatasetUnico)
-                        {
+                            //MessageBox.Show("entrando al ciclo");
                             pfeaturedataset = pFeatureWorkspace.OpenFeatureDataset(pSdeDSName.Name);
 
                             pEnumDataset = pfeaturedataset.Subsets;
@@ -221,8 +320,9 @@ namespace Migracion_Geodatabase
                                     {
 
                                         string InFc = @Geodatabase + Path.DirectorySeparatorChar + pSdeDSName.Name + Path.DirectorySeparatorChar + pDataset.Name;
-                                        string OutFc = @GeodatabaseSalida + Path.DirectorySeparatorChar + pSdeDSName.Name + Path.DirectorySeparatorChar + pDataset.Name;
+                                        string OutFc = @GeodatabaseSalida + Path.DirectorySeparatorChar +EsquemaSDE+"."+ pSdeDSName.Name + Path.DirectorySeparatorChar +EsquemaSDE+"."+ pDataset.Name;
                                         string nameFc = pSdeDSName.Name + Path.DirectorySeparatorChar + pDataset.Name;
+                                        string nameFcOut = EsquemaSDE + "." + pSdeDSName.Name + Path.DirectorySeparatorChar + EsquemaSDE + "." + pDataset.Name;
                                         try
                                         {
                                             pFeatureClass = pGputility.OpenFeatureClassFromString(OutFc);
@@ -234,7 +334,7 @@ namespace Migracion_Geodatabase
                                         if (pFeatureClass != null)
                                         {
                                             Ruta1.Add(nameFc);
-                                            Ruta2.Add(nameFc);
+                                            Ruta2.Add(nameFcOut);
                                         }
                                         else
                                         {
@@ -249,7 +349,7 @@ namespace Migracion_Geodatabase
                                 pDataset = pEnumDataset.Next();
                             }
 
-                        }
+                        
                         pSdeDSName = pEnumDSName.Next();
                     }
                 }
@@ -259,10 +359,11 @@ namespace Migracion_Geodatabase
                 Ruta.Add(Ruta2);
 
                 return Ruta;
-            }
+            
+          }
             catch (Exception e)
             {
-                MessageBox.Show("Error recorriendo Geodatabase: " + e.Message + pDataset.Name);
+                MessageBox.Show("Error recorriendo Geodatabase: " + e.Message);
                 return null;
 
 
@@ -332,7 +433,7 @@ namespace Migracion_Geodatabase
                         pDataset = pEnumDataset.Next();
                         while (pDataset != null)
                         {
-                            if (pDataset.Type == esriDatasetType.esriDTFeatureClass && pDataset.Name != "MBAG.F02AVIA_VIA_500K_A")
+                            if (pDataset.Type == esriDatasetType.esriDTFeatureClass)
                             {
 
 
