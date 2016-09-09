@@ -32,7 +32,7 @@ namespace Migracion_Geodatabase
                     string NombreSalida = FieldsSalida.get_Field(i).Name;
                     for (int j = 0; j < FieldsEntrada.FieldCount; j++)
                     {
-                        string NombreEntrada = FieldsEntrada.get_Field(i).Name;
+                        string NombreEntrada = FieldsEntrada.get_Field(j).Name;
                         if (NombreEntrada.ToUpper() != "OBJECTID" && NombreEntrada.ToUpper() != "SHAPE" && NombreEntrada.ToUpper() != "SHAPE_LENGTH" && NombreEntrada.ToUpper() != "SHAPE_AREA")
                         { 
                             if(NombreSalida.ToUpper()==NombreEntrada.ToUpper())
@@ -42,6 +42,8 @@ namespace Migracion_Geodatabase
                         }
                     }
                 }
+
+
 
                 IDataset dataset = (IDataset)featureClassSalida;
                 IWorkspace workspace = dataset.Workspace;
@@ -61,6 +63,7 @@ namespace Migracion_Geodatabase
                 IFeatureCursor searchCursor = featureClassEntrada.Search(null, true);
                 IFeatureCursor insertCursor = featureClassSalida.Insert(true);
                 comReleaser.ManageLifetime(insertCursor);
+                
 
                 // All of the features to be created are classified as Primary Highways.
                 IFeature feature = null;
@@ -71,19 +74,25 @@ namespace Migracion_Geodatabase
                     {
                         //MessageBox.Show(campo);
                         
+                        int index = FieldsEntrada.FindField(campo);
+                        int indexSalida = FieldsEntrada.FindField(campo);
                         try{
-                            object valor = feature.get_Value(FieldsSalida.FindField(campo));
-                            featureBuffer.set_Value(FieldsEntrada.FindField(campo), valor);
+                            if (index != -1)
+                            {
+                                
+                                featureBuffer.set_Value(indexSalida, feature.get_Value(index));
+                            }
                             }
                         catch(Exception  ex){
+                            MessageBox.Show("Error insertando " + ex.Message + " " + campo);
 
                         }
-                        
-                        
+                                            
 
                     }
-                    featureBuffer.Shape = feature.Shape;                  
-                    insertCursor.InsertFeature(featureBuffer);
+                    
+                   featureBuffer.Shape = feature.ShapeCopy;                  
+                   insertCursor.InsertFeature(featureBuffer);
                 }
 
                 // Flush the buffer to the geodatabase.
