@@ -63,8 +63,9 @@ namespace Migracion_Geodatabase
                 IFeatureCursor searchCursor = featureClassEntrada.Search(null, true);
                 IFeatureCursor insertCursor = featureClassSalida.Insert(true);
                 comReleaser.ManageLifetime(insertCursor);
-                
 
+                IFeature featureOut = featureClassSalida.CreateFeature();
+                
                 // All of the features to be created are classified as Primary Highways.
                 IFeature feature = null;
                 while ((feature = searchCursor.NextFeature()) != null)
@@ -76,23 +77,26 @@ namespace Migracion_Geodatabase
                         
                         int index = FieldsEntrada.FindField(campo);
                         int indexSalida = FieldsEntrada.FindField(campo);
+                        IField pField = feature.Fields.get_Field(index);
                         try{
-                            if (index != -1)
+                            if (index != -1 && pField.Editable)
                             {
-                                
+                                //featureOut.set_Value(indexSalida, feature.get_Value(index));
                                 featureBuffer.set_Value(indexSalida, feature.get_Value(index));
                             }
                             }
                         catch(Exception  ex){
-                            MessageBox.Show("Error insertando " + ex.Message + " " + campo);
+                            MessageBox.Show("Error insertando " + ex.Message + " " + campo +sfeatureClassEntrada);
 
                         }
                                             
 
                     }
+                    //featureOut.Shape = feature.ShapeCopy;
                     
                    featureBuffer.Shape = feature.ShapeCopy;                  
                    insertCursor.InsertFeature(featureBuffer);
+                    //featureOut.Store();
                 }
 
                 // Flush the buffer to the geodatabase.

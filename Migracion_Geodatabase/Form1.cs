@@ -82,7 +82,9 @@ namespace Migracion_Geodatabase
                                                      txtBoxGeodatabaseSalida.Text + Path.DirectorySeparatorChar + Rutas_Salida[i]
                         );
                         file.WriteLine(Rutas_Entrada[i] + "    ......      " +Rutas_Salida[i]);
-                        MessageBox.Show("Cargando" + Rutas_Entrada[i]);
+                        //MessageBox.Show("Cargando" + Rutas_Entrada[i]);
+                        lblProgreso.Refresh();
+                        lblProgreso.Text = "Cargando" + Rutas_Entrada[i];
                     
                 }
             }
