@@ -71,21 +71,40 @@ namespace Migracion_Geodatabase
             List<string> Rutas_Entrada= ListaFeatuaresClass[0];
             List<string> Rutas_Salida= ListaFeatuaresClass[1];
             Append_Custom append = new Append_Custom();
+
+
+            // Display the ProgressBar control.
+            prgBarProceso.Visible = true;
+            // Set Minimum to 1 to represent the first file being copied.
+            prgBarProceso.Minimum = 1;
+            // Set Maximum to the total number of files to copy.
+            prgBarProceso.Maximum = Rutas_Entrada.Count;
+            // Set the initial value of the ProgressBar.
+            prgBarProceso.Value = 1;
+            // Set the Step property to a value of 1 to represent each file being copied.
+            prgBarProceso.Step = 1;
+
+
+
+
             using (System.IO.StreamWriter file =
             
             new System.IO.StreamWriter(@txtBoxGeodatabaseEntrada.Text+".txt"))
             {
                 for (int i = 0; i <  Rutas_Entrada.Count; i++)
                 {
-                    // If the line doesn't contain the word 'Second', write the line to the file.
-                    append.InsertFeaturesUsingCursor(txtBoxGeodatabaseEntrada.Text + Path.DirectorySeparatorChar + Rutas_Entrada[i],
-                                                     txtBoxGeodatabaseSalida.Text + Path.DirectorySeparatorChar + Rutas_Salida[i]
-                        );
-                        file.WriteLine(Rutas_Entrada[i] + "    ......      " +Rutas_Salida[i]);
-                        //MessageBox.Show("Cargando" + Rutas_Entrada[i]);
-                        lblProgreso.Refresh();
+                    if (Rutas_Salida[i] != "...")
+                    {
+                        // If the line doesn't contain the word 'Second', write the line to the file.
+                        append.InsertFeaturesUsingCursor(txtBoxGeodatabaseEntrada.Text + Path.DirectorySeparatorChar + Rutas_Entrada[i],
+                                                         txtBoxGeodatabaseSalida.Text + Path.DirectorySeparatorChar + Rutas_Salida[i]
+                            );
+                        file.WriteLine(Rutas_Entrada[i] + "    ......      " + Rutas_Salida[i]);
+                        //MessageBox.Show("Cargando" + Rutas_Entrada[i]);                        
                         lblProgreso.Text = "Cargando" + Rutas_Entrada[i];
-                    
+                        lblProgreso.Refresh();
+                        prgBarProceso.PerformStep();
+                    }
                 }
             }
             MessageBox.Show("Finalizado");

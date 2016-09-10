@@ -76,7 +76,7 @@ namespace Migracion_Geodatabase
                         //MessageBox.Show(campo);
                         
                         int index = FieldsEntrada.FindField(campo);
-                        int indexSalida = FieldsEntrada.FindField(campo);
+                        int indexSalida = FieldsSalida.FindField(campo);
                         IField pField = feature.Fields.get_Field(index);
                         try{
                             if (index != -1 && pField.Editable)
@@ -93,8 +93,8 @@ namespace Migracion_Geodatabase
 
                     }
                     //featureOut.Shape = feature.ShapeCopy;
-                    
-                   featureBuffer.Shape = feature.ShapeCopy;                  
+                   featureBuffer.Shape = feature.Shape; 
+                                              
                    insertCursor.InsertFeature(featureBuffer);
                     //featureOut.Store();
                 }
