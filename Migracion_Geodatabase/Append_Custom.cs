@@ -7,6 +7,9 @@ using System.Linq;
 using System.Text;
 using ESRI.ArcGIS.Geometry;
 using System.Windows.Forms;
+using ESRI.ArcGIS.Geoprocessing;
+using ESRI.ArcGIS.esriSystem;
+
 
 namespace Migracion_Geodatabase
 {
@@ -103,6 +106,25 @@ namespace Migracion_Geodatabase
                 insertCursor.Flush();
                 workspaceEdit.StopEditOperation();
                 workspaceEdit.StopEditing(true);
+            }
+        }
+
+        public void AppendTest(string sfeatureClassEntrada, string sfeatureClassSalida)
+        {
+            try
+            {
+            IGeoProcessor2 gp = new GeoProcessorClass();
+            IVariantArray parameters = new VarArrayClass();
+            parameters.Add(@sfeatureClassEntrada);
+            parameters.Add(@sfeatureClassSalida);
+            parameters.Add("NO_TEST");
+            gp.Execute("Append_Management", parameters, null);
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show("Error cargando la capa " + sfeatureClassEntrada);
+
+
             }
         }
     }
