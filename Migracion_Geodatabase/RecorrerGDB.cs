@@ -101,6 +101,7 @@ namespace Migracion_Geodatabase
 
             List<string> Ruta1 = new List<string>();
             List<string> Ruta2 = new List<string>();
+            List<string> Tipo = new List<string>();
             List<List<string>> Ruta = new List<List<string>>();
             pGputility = new GPUtilitiesClass();
 
@@ -152,12 +153,14 @@ namespace Migracion_Geodatabase
                                 {
                                     Ruta1.Add(nameFc);
                                     Ruta2.Add(nameFc);
+                                    Tipo.Add("Featuare");
 
                                 }
                                 else
                                 {
                                     Ruta1.Add(nameFc);
                                     Ruta2.Add("...");
+                                    Tipo.Add("Featuare");
                                 }
                             }
                         }
@@ -182,12 +185,14 @@ namespace Migracion_Geodatabase
                                 {
                                     Ruta1.Add(nameFc);
                                     Ruta2.Add(nameFcOut);
+                                    Tipo.Add("Featuare");
 
                                 }
                                 else
                                 {
                                     Ruta1.Add(nameFc);
                                     Ruta2.Add("...");
+                                    Tipo.Add("Featuare");
                                 }
                             }
 
@@ -213,12 +218,14 @@ namespace Migracion_Geodatabase
                                 {
                                     Ruta1.Add(nameFc);
                                     Ruta2.Add(nameFc);
+                                    Tipo.Add("Table");
 
                                 }
                                 else
                                 {
                                     Ruta1.Add(nameFc);
                                     Ruta2.Add("...");
+                                    Tipo.Add("Table");
                                 }
                             }
 
@@ -241,12 +248,14 @@ namespace Migracion_Geodatabase
                                     {
                                         Ruta1.Add(nameFc);
                                         Ruta2.Add(nameFcOut);
+                                        Tipo.Add("Table");
 
                                     }
                                     else
                                     {
                                         Ruta1.Add(nameFc);
                                         Ruta2.Add("...");
+                                        Tipo.Add("Table");
                                     }
                                 }
 
@@ -287,11 +296,13 @@ namespace Migracion_Geodatabase
                                     {
                                         Ruta1.Add(nameFc);
                                         Ruta2.Add(nameFc);
+                                        Tipo.Add("Feature");
                                     }
                                     else
                                     {
                                         Ruta1.Add(nameFc);
                                         Ruta2.Add("...");
+                                        Tipo.Add("Feature");
                                     }
 
                                 }
@@ -313,7 +324,7 @@ namespace Migracion_Geodatabase
                             {
                                 if (pDataset.Type == esriDatasetType.esriDTFeatureClass)
                                 {
-
+                                   
                                     pName = pDataset.FullName;
                                     ptable = pName.Open() as ITable;
                                     if (ptable.RowCount(null) > 0)
@@ -335,11 +346,13 @@ namespace Migracion_Geodatabase
                                         {
                                             Ruta1.Add(nameFc);
                                             Ruta2.Add(nameFcOut);
+                                            Tipo.Add("Feature");
                                         }
                                         else
                                         {
                                             Ruta1.Add(nameFc);
                                             Ruta2.Add("...");
+                                            Tipo.Add("Feature");
                                         }
 
                                     }
@@ -357,7 +370,7 @@ namespace Migracion_Geodatabase
 
                 Ruta.Add(Ruta1);
                 Ruta.Add(Ruta2);
-
+                Ruta.Add(Tipo);
                 return Ruta;
             
           }

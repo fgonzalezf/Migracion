@@ -29,6 +29,8 @@
         private void InitializeComponent()
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.cmbBoxEsquemaSDE = new System.Windows.Forms.ComboBox();
+            this.lblEsquemaSDE = new System.Windows.Forms.Label();
             this.lblProgreso = new System.Windows.Forms.Label();
             this.rdBtnSinRelacionarAnotaciones = new System.Windows.Forms.RadioButton();
             this.rdBtnRelacionandoAnotaciones = new System.Windows.Forms.RadioButton();
@@ -42,8 +44,6 @@
             this.txtBoxGeodatabaseSalida = new System.Windows.Forms.TextBox();
             this.lblGeodatabaseEntrada = new System.Windows.Forms.Label();
             this.txtBoxGeodatabaseEntrada = new System.Windows.Forms.TextBox();
-            this.lblEsquemaSDE = new System.Windows.Forms.Label();
-            this.cmbBoxEsquemaSDE = new System.Windows.Forms.ComboBox();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -71,6 +71,24 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Migración Geodatabase";
             // 
+            // cmbBoxEsquemaSDE
+            // 
+            this.cmbBoxEsquemaSDE.Enabled = false;
+            this.cmbBoxEsquemaSDE.FormattingEnabled = true;
+            this.cmbBoxEsquemaSDE.Location = new System.Drawing.Point(95, 120);
+            this.cmbBoxEsquemaSDE.Name = "cmbBoxEsquemaSDE";
+            this.cmbBoxEsquemaSDE.Size = new System.Drawing.Size(185, 21);
+            this.cmbBoxEsquemaSDE.TabIndex = 14;
+            // 
+            // lblEsquemaSDE
+            // 
+            this.lblEsquemaSDE.AutoSize = true;
+            this.lblEsquemaSDE.Location = new System.Drawing.Point(3, 125);
+            this.lblEsquemaSDE.Name = "lblEsquemaSDE";
+            this.lblEsquemaSDE.Size = new System.Drawing.Size(76, 13);
+            this.lblEsquemaSDE.TabIndex = 13;
+            this.lblEsquemaSDE.Text = "Esquema SDE";
+            // 
             // lblProgreso
             // 
             this.lblProgreso.AutoSize = true;
@@ -90,6 +108,7 @@
             this.rdBtnSinRelacionarAnotaciones.TabStop = true;
             this.rdBtnSinRelacionarAnotaciones.Text = "Sin Relacionar Anotaciones";
             this.rdBtnSinRelacionarAnotaciones.UseVisualStyleBackColor = true;
+            this.rdBtnSinRelacionarAnotaciones.CheckedChanged += new System.EventHandler(this.rdBtnSinRelacionarAnotaciones_CheckedChanged);
             // 
             // rdBtnRelacionandoAnotaciones
             // 
@@ -101,6 +120,7 @@
             this.rdBtnRelacionandoAnotaciones.TabStop = true;
             this.rdBtnRelacionandoAnotaciones.Text = "Relacionando Anotaciones ";
             this.rdBtnRelacionandoAnotaciones.UseVisualStyleBackColor = true;
+            this.rdBtnRelacionandoAnotaciones.CheckedChanged += new System.EventHandler(this.rdBtnRelacionandoAnotaciones_CheckedChanged);
             // 
             // rdBtnSinAnotaciones
             // 
@@ -112,6 +132,7 @@
             this.rdBtnSinAnotaciones.TabStop = true;
             this.rdBtnSinAnotaciones.Text = "Sin Anotaciones";
             this.rdBtnSinAnotaciones.UseVisualStyleBackColor = true;
+            this.rdBtnSinAnotaciones.CheckedChanged += new System.EventHandler(this.rdBtnSinAnotaciones_CheckedChanged);
             // 
             // rdBtnAutocrear
             // 
@@ -123,6 +144,7 @@
             this.rdBtnAutocrear.TabStop = true;
             this.rdBtnAutocrear.Text = "Autocrear Anotaciones";
             this.rdBtnAutocrear.UseVisualStyleBackColor = true;
+            this.rdBtnAutocrear.CheckedChanged += new System.EventHandler(this.rdBtnAutocrear_CheckedChanged);
             // 
             // btnMigrar
             // 
@@ -195,24 +217,6 @@
             this.txtBoxGeodatabaseEntrada.Name = "txtBoxGeodatabaseEntrada";
             this.txtBoxGeodatabaseEntrada.Size = new System.Drawing.Size(581, 20);
             this.txtBoxGeodatabaseEntrada.TabIndex = 0;
-            // 
-            // lblEsquemaSDE
-            // 
-            this.lblEsquemaSDE.AutoSize = true;
-            this.lblEsquemaSDE.Location = new System.Drawing.Point(3, 125);
-            this.lblEsquemaSDE.Name = "lblEsquemaSDE";
-            this.lblEsquemaSDE.Size = new System.Drawing.Size(76, 13);
-            this.lblEsquemaSDE.TabIndex = 13;
-            this.lblEsquemaSDE.Text = "Esquema SDE";
-            // 
-            // cmbBoxEsquemaSDE
-            // 
-            this.cmbBoxEsquemaSDE.Enabled = false;
-            this.cmbBoxEsquemaSDE.FormattingEnabled = true;
-            this.cmbBoxEsquemaSDE.Location = new System.Drawing.Point(95, 120);
-            this.cmbBoxEsquemaSDE.Name = "cmbBoxEsquemaSDE";
-            this.cmbBoxEsquemaSDE.Size = new System.Drawing.Size(185, 21);
-            this.cmbBoxEsquemaSDE.TabIndex = 14;
             // 
             // formaMigracion
             // 

@@ -110,6 +110,48 @@ namespace Migracion_Geodatabase
             MessageBox.Show("Finalizado");
         }
 
+        private void rdBtnAutocrear_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rdBtnAutocrear.Checked==true)
+            {
+                rdBtnRelacionandoAnotaciones.Checked = false;
+                rdBtnSinAnotaciones.Checked = false;
+                rdBtnSinRelacionarAnotaciones.Checked = false;
+            }
+        }
+
+        private void rdBtnSinAnotaciones_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rdBtnSinAnotaciones.Checked == true)
+            {
+                rdBtnRelacionandoAnotaciones.Checked = false;
+                rdBtnAutocrear.Checked = false;
+                rdBtnSinRelacionarAnotaciones.Checked = false;
+            }
+        }
+
+        private void rdBtnRelacionandoAnotaciones_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rdBtnRelacionandoAnotaciones.Checked == true)
+            {
+                rdBtnAutocrear.Checked = false;
+                rdBtnSinAnotaciones.Checked = false;
+                rdBtnSinRelacionarAnotaciones.Checked = false;
+            }
+        }
+
+        private void rdBtnSinRelacionarAnotaciones_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rdBtnSinRelacionarAnotaciones.Checked == true)
+            {
+                rdBtnRelacionandoAnotaciones.Checked = false;
+                rdBtnSinAnotaciones.Checked = false;
+                rdBtnAutocrear.Checked = false;
+            }
+        }
+
+
+
         
     }
 }
