@@ -162,6 +162,7 @@ namespace Migracion_Geodatabase
                             IField pField = featureAnot.Fields.get_Field(index);
                             try
                             {
+
                                 
                                 if (index != -1 && pField.Editable && campo.ToUpper()!="FEATUREID")
                                 {
