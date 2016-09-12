@@ -59,17 +59,8 @@ namespace Migracion_Geodatabase
             RecorrerGDB arreglo = new RecorrerGDB();
             string Imprimir="Terminado";
             List<List<string>> ListaFeatuaresClass=new List<List<string>>();
-            if (txtBoxGeodatabaseSalida.Text.Contains(".sde"))
-            {
-                ListaFeatuaresClass = arreglo.Recorrer(txtBoxGeodatabaseEntrada.Text, txtBoxGeodatabaseSalida.Text, cmbBoxEsquemaSDE.SelectedItem.ToString());
-                MessageBox.Show(cmbBoxEsquemaSDE.SelectedItem.ToString());
-            }
-            else 
-            {
-                ListaFeatuaresClass = arreglo.Recorrer(txtBoxGeodatabaseEntrada.Text, txtBoxGeodatabaseSalida.Text, "");
-            }
-            List<string> Rutas_Entrada= ListaFeatuaresClass[0];
-            List<string> Rutas_Salida= ListaFeatuaresClass[1];
+            
+            
             Append_Custom append = new Append_Custom();
 
 
@@ -78,35 +69,159 @@ namespace Migracion_Geodatabase
             // Set Minimum to 1 to represent the first file being copied.
             prgBarProceso.Minimum = 1;
             // Set Maximum to the total number of files to copy.
-            prgBarProceso.Maximum = Rutas_Entrada.Count;
+           
             // Set the initial value of the ProgressBar.
             prgBarProceso.Value = 1;
             // Set the Step property to a value of 1 to represent each file being copied.
             prgBarProceso.Step = 1;
 
 
-
-
-            using (System.IO.StreamWriter file =
-            
-            new System.IO.StreamWriter(@txtBoxGeodatabaseEntrada.Text+".txt"))
+            if (rdBtnAutocrear.Checked==true)
             {
-                for (int i = 0; i <  Rutas_Entrada.Count; i++)
+                if (txtBoxGeodatabaseSalida.Text.Contains(".sde"))
                 {
-                    if (Rutas_Salida[i] != "...")
+                    ListaFeatuaresClass = arreglo.Recorrer(txtBoxGeodatabaseEntrada.Text, txtBoxGeodatabaseSalida.Text, cmbBoxEsquemaSDE.SelectedItem.ToString(), true);
+                    MessageBox.Show(cmbBoxEsquemaSDE.SelectedItem.ToString());
+                }
+                else
+                {
+                    ListaFeatuaresClass = arreglo.Recorrer(txtBoxGeodatabaseEntrada.Text, txtBoxGeodatabaseSalida.Text, "", true);
+                }
+                List<string> Rutas_Entrada = ListaFeatuaresClass[0];
+                List<string> Rutas_Salida = ListaFeatuaresClass[1];
+                List<string> Tipo = ListaFeatuaresClass[2];
+                List<string> TipoCargue = ListaFeatuaresClass[3];
+                prgBarProceso.Maximum = Rutas_Entrada.Count;
+                
+            }
+            else if (rdBtnRelacionandoAnotaciones.Checked==true)
+            {
+                if (txtBoxGeodatabaseSalida.Text.Contains(".sde"))
                     {
-                        // If the line doesn't contain the word 'Second', write the line to the file.
-                        append.InsertFeaturesUsingCursor(txtBoxGeodatabaseEntrada.Text + Path.DirectorySeparatorChar + Rutas_Entrada[i],
-                                                         txtBoxGeodatabaseSalida.Text + Path.DirectorySeparatorChar + Rutas_Salida[i]
-                            );
-                        file.WriteLine(Rutas_Entrada[i] + "    ......      " + Rutas_Salida[i]);
-                        //MessageBox.Show("Cargando" + Rutas_Entrada[i]);                        
-                        lblProgreso.Text = "Cargando" + Rutas_Entrada[i];
-                        lblProgreso.Refresh();
-                        prgBarProceso.PerformStep();
+                        ListaFeatuaresClass = arreglo.Recorrer(txtBoxGeodatabaseEntrada.Text, txtBoxGeodatabaseSalida.Text, cmbBoxEsquemaSDE.SelectedItem.ToString(),false);
+                        MessageBox.Show(cmbBoxEsquemaSDE.SelectedItem.ToString());
+                    }
+                else 
+                {
+                    ListaFeatuaresClass = arreglo.Recorrer(txtBoxGeodatabaseEntrada.Text, txtBoxGeodatabaseSalida.Text, "", false);
+                }
+                List<string> Rutas_Entrada = ListaFeatuaresClass[0];
+                List<string> Rutas_Salida = ListaFeatuaresClass[1];
+                List<string> Tipo = ListaFeatuaresClass[2];
+                List<string> TipoCargue = ListaFeatuaresClass[3];
+          
+                prgBarProceso.Maximum = Rutas_Entrada.Count;
+                using (System.IO.StreamWriter file =
+                new System.IO.StreamWriter(@txtBoxGeodatabaseEntrada.Text + ".txt"))
+                {
+                    for (int i = 0; i < Rutas_Entrada.Count; i++)
+                    {
+                        string FeatAnot="";
+                        if (Rutas_Salida[i] != "...")
+                        {
+
+                            if (Tipo[i] == "Annotation")
+                            {
+                                // If the line doesn't contain the word 'Second', write the line to the file.
+                                append.InsertFeaturesUsingCursor(txtBoxGeodatabaseEntrada.Text + Path.DirectorySeparatorChar + Rutas_Entrada[i],
+                                                                 txtBoxGeodatabaseSalida.Text + Path.DirectorySeparatorChar + Rutas_Salida[i],
+                                                                 Tipo[i]
+                                                                 
+                                    );
+                            }
+                            else if (TipoCargue[i]=="Cargar")
+                            {
+                                append.AppendTest(txtBoxGeodatabaseEntrada.Text + Path.DirectorySeparatorChar + Rutas_Entrada[i],
+                                                            txtBoxGeodatabaseSalida.Text + Path.DirectorySeparatorChar + Rutas_Salida[i]
+                                                            
+                               );
+                            }
+                            file.WriteLine(Rutas_Entrada[i] + "    ......      " + Rutas_Salida[i] + "....." + Tipo[i]+ "....."+ TipoCargue[i]);
+                            //MessageBox.Show("Cargando" + Rutas_Entrada[i]);                        
+                            lblProgreso.Text = "Cargando" + Rutas_Entrada[i];
+                            lblProgreso.Refresh();
+                            prgBarProceso.PerformStep();
+                        }
                     }
                 }
+
             }
+            else if (rdBtnSinAnotaciones.Checked==true)
+            {
+                if (txtBoxGeodatabaseSalida.Text.Contains(".sde"))
+                {
+                    ListaFeatuaresClass = arreglo.Recorrer(txtBoxGeodatabaseEntrada.Text, txtBoxGeodatabaseSalida.Text, cmbBoxEsquemaSDE.SelectedItem.ToString(), false);
+                    MessageBox.Show(cmbBoxEsquemaSDE.SelectedItem.ToString());
+                }
+                else
+                {
+                    ListaFeatuaresClass = arreglo.Recorrer(txtBoxGeodatabaseEntrada.Text, txtBoxGeodatabaseSalida.Text, "", false);
+                }
+                List<string> Rutas_Entrada = ListaFeatuaresClass[0];
+                List<string> Rutas_Salida = ListaFeatuaresClass[1];
+                List<string> Tipo = ListaFeatuaresClass[2];
+                List<string> TipoCargue = ListaFeatuaresClass[3];
+                prgBarProceso.Maximum = Rutas_Entrada.Count;
+                using (System.IO.StreamWriter file =
+                new System.IO.StreamWriter(@txtBoxGeodatabaseEntrada.Text + ".txt"))
+                {
+                    for (int i = 0; i < Rutas_Entrada.Count; i++)
+                    {
+                        if (Rutas_Salida[i] != "..." && Tipo[i]!="Annotation" )
+                        {
+                            // If the line doesn't contain the word 'Second', write the line to the file.
+                            append.AppendTest(txtBoxGeodatabaseEntrada.Text + Path.DirectorySeparatorChar + Rutas_Entrada[i],
+                                                             txtBoxGeodatabaseSalida.Text + Path.DirectorySeparatorChar + Rutas_Salida[i]
+                                );
+                            file.WriteLine(Rutas_Entrada[i] + "    ......      " + Rutas_Salida[i]);
+                            //MessageBox.Show("Cargando" + Rutas_Entrada[i]);                        
+                            lblProgreso.Text = "Cargando" + Rutas_Entrada[i];
+                            lblProgreso.Refresh();
+                            prgBarProceso.PerformStep();
+                        }
+                    }
+                }
+
+            }
+            else if (rdBtnSinRelacionarAnotaciones.Checked==true)
+            {
+                if (txtBoxGeodatabaseSalida.Text.Contains(".sde"))
+                {
+                    ListaFeatuaresClass = arreglo.Recorrer(txtBoxGeodatabaseEntrada.Text, txtBoxGeodatabaseSalida.Text, cmbBoxEsquemaSDE.SelectedItem.ToString(), false);
+                    MessageBox.Show(cmbBoxEsquemaSDE.SelectedItem.ToString());
+                }
+                else
+                {
+                    ListaFeatuaresClass = arreglo.Recorrer(txtBoxGeodatabaseEntrada.Text, txtBoxGeodatabaseSalida.Text, "", false);
+                }
+                List<string> Rutas_Entrada = ListaFeatuaresClass[0];
+                List<string> Rutas_Salida = ListaFeatuaresClass[1];
+                List<string> Tipo = ListaFeatuaresClass[2];
+                List<string> TipoCargue = ListaFeatuaresClass[3];
+                prgBarProceso.Maximum = Rutas_Entrada.Count;
+                using (System.IO.StreamWriter file =
+                new System.IO.StreamWriter(@txtBoxGeodatabaseEntrada.Text + ".txt"))
+                {
+                    for (int i = 0; i < Rutas_Entrada.Count; i++)
+                    {
+                        if (Rutas_Salida[i] != "...")
+                        {
+                            // If the line doesn't contain the word 'Second', write the line to the file.
+                            append.AppendTest(txtBoxGeodatabaseEntrada.Text + Path.DirectorySeparatorChar + Rutas_Entrada[i],
+                                                             txtBoxGeodatabaseSalida.Text + Path.DirectorySeparatorChar + Rutas_Salida[i]
+                                );
+                            file.WriteLine(Rutas_Entrada[i] + "    ......      " + Rutas_Salida[i]);
+                            //MessageBox.Show("Cargando" + Rutas_Entrada[i]);                        
+                            lblProgreso.Text = "Cargando" + Rutas_Entrada[i];
+                            lblProgreso.Refresh();
+                            prgBarProceso.PerformStep();
+                        }
+                    }
+                }
+
+            }
+
+            
             MessageBox.Show("Finalizado");
         }
 
@@ -150,8 +265,7 @@ namespace Migracion_Geodatabase
             }
         }
 
-
-
+        
         
     }
 }

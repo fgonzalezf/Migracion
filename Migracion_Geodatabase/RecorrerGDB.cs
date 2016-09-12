@@ -8,7 +8,7 @@ using ESRI.ArcGIS.esriSystem;
 using ESRI.ArcGIS.Geoprocessing;
 using System.Windows.Forms;
 using System.IO;
-
+using ESRI.ArcGIS.Carto;
 namespace Migracion_Geodatabase
 {
     class RecorrerGDB
@@ -30,6 +30,7 @@ namespace Migracion_Geodatabase
         IGPUtilities pGputility;
         IFeatureClass pFeatureClass;
         IFeatureClass pFeatureClassout;
+        IFeatureClass pFeatureClassoutAnot;
         ITable pFeatureTable;
         ITable pFeatureTableout;
 
@@ -96,17 +97,18 @@ namespace Migracion_Geodatabase
 
 
 
-        public List<List<string>> Recorrer(string Geodatabase, string GeodatabaseSalida, string EsquemaSDE)
+        public List<List<string>> Recorrer(string Geodatabase, string GeodatabaseSalida, string EsquemaSDE, bool Autocreate)
         {
 
             List<string> Ruta1 = new List<string>();
             List<string> Ruta2 = new List<string>();
             List<string> Tipo = new List<string>();
+            List<string> TipoCargue = new List<string>();
             List<List<string>> Ruta = new List<List<string>>();
             pGputility = new GPUtilitiesClass();
 
-            try
-            {
+            //try
+            //{
                 if (Geodatabase.Contains(".mdb"))
                 {
                     pSdeWorkspaceFactory = new AccessWorkspaceFactoryClass();
@@ -137,6 +139,9 @@ namespace Migracion_Geodatabase
                         {
                             string InFc = @Geodatabase + Path.DirectorySeparatorChar + pSdeDSName.Name;
                             string OutFc = @GeodatabaseSalida + Path.DirectorySeparatorChar + pSdeDSName.Name;
+                            
+
+
                             string nameFc = pSdeDSName.Name;
                             try
                             {
@@ -154,6 +159,7 @@ namespace Migracion_Geodatabase
                                     Ruta1.Add(nameFc);
                                     Ruta2.Add(nameFc);
                                     Tipo.Add("Featuare");
+                                    TipoCargue.Add("Cargar");
 
                                 }
                                 else
@@ -161,6 +167,7 @@ namespace Migracion_Geodatabase
                                     Ruta1.Add(nameFc);
                                     Ruta2.Add("...");
                                     Tipo.Add("Featuare");
+                                    TipoCargue.Add("Cargar");
                                 }
                             }
                         }
@@ -186,6 +193,7 @@ namespace Migracion_Geodatabase
                                     Ruta1.Add(nameFc);
                                     Ruta2.Add(nameFcOut);
                                     Tipo.Add("Featuare");
+                                    TipoCargue.Add("Cargar");
 
                                 }
                                 else
@@ -193,6 +201,7 @@ namespace Migracion_Geodatabase
                                     Ruta1.Add(nameFc);
                                     Ruta2.Add("...");
                                     Tipo.Add("Featuare");
+                                    TipoCargue.Add("Cargar");
                                 }
                             }
 
@@ -213,12 +222,23 @@ namespace Migracion_Geodatabase
 
                             if (pFeatureTable.RowCount(null) > 0)
                             {
-                                pFeatureTableout = pGputility.OpenTableFromString(OutFc);
+                                try
+                                {
+                                    pFeatureTableout = pGputility.OpenTableFromString(OutFc);
+                                }
+                                catch
+                                {
+                                    pFeatureTableout = null;
+                                }
                                 if (pFeatureClassout != null)
                                 {
+                                    
+
                                     Ruta1.Add(nameFc);
                                     Ruta2.Add(nameFc);
                                     Tipo.Add("Table");
+                                    TipoCargue.Add("Cargar");
+                                    
 
                                 }
                                 else
@@ -226,6 +246,7 @@ namespace Migracion_Geodatabase
                                     Ruta1.Add(nameFc);
                                     Ruta2.Add("...");
                                     Tipo.Add("Table");
+                                    TipoCargue.Add("Cargar");
                                 }
                             }
 
@@ -249,6 +270,7 @@ namespace Migracion_Geodatabase
                                         Ruta1.Add(nameFc);
                                         Ruta2.Add(nameFcOut);
                                         Tipo.Add("Table");
+                                        TipoCargue.Add("Cargar");
 
                                     }
                                     else
@@ -256,6 +278,7 @@ namespace Migracion_Geodatabase
                                         Ruta1.Add(nameFc);
                                         Ruta2.Add("...");
                                         Tipo.Add("Table");
+                                        TipoCargue.Add("Cargar");
                                     }
                                 }
 
@@ -284,25 +307,61 @@ namespace Migracion_Geodatabase
                                     string InFc = @Geodatabase + Path.DirectorySeparatorChar + pSdeDSName.Name + Path.DirectorySeparatorChar + pDataset.Name;
                                     string OutFc = @GeodatabaseSalida + Path.DirectorySeparatorChar + pSdeDSName.Name + Path.DirectorySeparatorChar + pDataset.Name;
                                     string nameFc = pSdeDSName.Name + Path.DirectorySeparatorChar + pDataset.Name;
+                                    //Anotaciones
+                                    string OutFcAnot = @GeodatabaseSalida + Path.DirectorySeparatorChar + pSdeDSName.Name + Path.DirectorySeparatorChar + pDataset.Name + "_Anot";
+                                    
                                     try
                                     {
-                                        pFeatureClass = pGputility.OpenFeatureClassFromString(OutFc);
+                                        pFeatureClassoutAnot = pGputility.OpenFeatureClassFromString(OutFcAnot);
                                     }
                                     catch (Exception ex)
                                     {
-                                        pFeatureClass = null;
+                                        pFeatureClassoutAnot = null;
                                     }
-                                    if (pFeatureClass != null)
+                                    try
+                                    {
+                                        pFeatureClassout = pGputility.OpenFeatureClassFromString(OutFc);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        pFeatureClassout = null;
+                                    }
+
+                                    if (pFeatureClassout != null)
                                     {
                                         Ruta1.Add(nameFc);
                                         Ruta2.Add(nameFc);
-                                        Tipo.Add("Feature");
+                                        if (pFeatureClassout.FeatureType == esriFeatureType.esriFTAnnotation)
+                                        {
+                                            Tipo.Add("Annotation");
+                                            SetAtoCreateAnot(OutFc, Autocreate);
+                                        }
+                                        else
+                                        {
+                                            Tipo.Add("Feature");
+                                        }
+                                        if (pFeatureClassoutAnot != null)
+                                        {
+                                            TipoCargue.Add("No_Cargar");
+                                        }
+                                        else
+                                        {
+                                            TipoCargue.Add("Cargar");
+                                        }
+
+
+
                                     }
                                     else
                                     {
                                         Ruta1.Add(nameFc);
                                         Ruta2.Add("...");
-                                        Tipo.Add("Feature");
+                                        
+                                        Tipo.Add("Annotation");
+                                       
+                                        TipoCargue.Add("Cargar");
+
+
                                     }
 
                                 }
@@ -334,25 +393,67 @@ namespace Migracion_Geodatabase
                                         string OutFc = @GeodatabaseSalida + Path.DirectorySeparatorChar +EsquemaSDE+"."+ pSdeDSName.Name + Path.DirectorySeparatorChar +EsquemaSDE+"."+ pDataset.Name;
                                         string nameFc = pSdeDSName.Name + Path.DirectorySeparatorChar + pDataset.Name;
                                         string nameFcOut = EsquemaSDE + "." + pSdeDSName.Name + Path.DirectorySeparatorChar + EsquemaSDE + "." + pDataset.Name;
+
+                                        string OutFcAnot = @GeodatabaseSalida + Path.DirectorySeparatorChar + EsquemaSDE + "." + pSdeDSName.Name + Path.DirectorySeparatorChar + EsquemaSDE + "." + pDataset.Name +"_Anot";
                                         try
                                         {
-                                            pFeatureClass = pGputility.OpenFeatureClassFromString(OutFc);
+                                            pFeatureClassoutAnot = pGputility.OpenFeatureClassFromString(OutFcAnot);
                                         }
                                         catch (Exception ex)
                                         {
-                                            pFeatureClass = null;
+                                            pFeatureClassoutAnot = null;
                                         }
-                                        if (pFeatureClass != null)
+                                                                            
+                                        
+                                        try
+                                        {
+                                            pFeatureClassout = pGputility.OpenFeatureClassFromString(OutFc);
+                                            pFeatureClass = pGputility.OpenFeatureClassFromString(InFc);
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            pFeatureClassout = null;
+                                        }
+                                        if (pFeatureClassout != null)
                                         {
                                             Ruta1.Add(nameFc);
                                             Ruta2.Add(nameFcOut);
-                                            Tipo.Add("Feature");
+                                            if (pFeatureClass.FeatureType==esriFeatureType.esriFTAnnotation)
+                                            {
+                                                Tipo.Add("Annotation");
+                                                SetAtoCreateAnot(OutFc,Autocreate);
+                                            }
+                                            else
+                                            {
+                                                Tipo.Add("Feature");
+                                            }
+                                            if (pFeatureClassoutAnot != null)
+                                            {
+                                                TipoCargue.Add("No_Cargar");
+                                            }
+                                            else
+                                            {
+                                                TipoCargue.Add("Cargar");
+                                            }
+                                            
+                                                
+                                                
                                         }
                                         else
                                         {
                                             Ruta1.Add(nameFc);
                                             Ruta2.Add("...");
-                                            Tipo.Add("Feature");
+                                            if (pFeatureClass.FeatureType == esriFeatureType.esriFTAnnotation)
+                                            {
+                                                Tipo.Add("Annotation");
+                                            }
+                                            else
+                                            {
+                                                Tipo.Add("Annotation");
+                                            }
+                                            TipoCargue.Add("Cargar");
+                                           
+                                            
                                         }
 
                                     }
@@ -371,16 +472,17 @@ namespace Migracion_Geodatabase
                 Ruta.Add(Ruta1);
                 Ruta.Add(Ruta2);
                 Ruta.Add(Tipo);
+                Ruta.Add(TipoCargue);
                 return Ruta;
             
-          }
-            catch (Exception e)
-            {
-                MessageBox.Show("Error recorriendo Geodatabase: " + e.Message);
-                return null;
+         // }
+            //catch (Exception e)
+            //{
+                //MessageBox.Show("Error recorriendo Geodatabase: " + e);
+                //return null;
 
 
-            }
+            //}
 
 
         }
@@ -499,6 +601,23 @@ namespace Migracion_Geodatabase
 
 
             return Ruta;
+        }
+
+        private void SetAtoCreateAnot(string Ruta, bool Inval)
+        {
+            try
+            {
+                IFeatureClass pFeatureClassAnot = pGputility.OpenFeatureClassFromString(Ruta);
+                IAnnoClass pAnnotClass = (IAnnoClass)pFeatureClassAnot;
+                IAnnoClassAdmin pAnnoClassAdmin = (IAnnoClassAdmin)pAnnotClass;
+                pAnnoClassAdmin.AutoCreate = Inval;
+                pAnnoClassAdmin.UpdateProperties();
+            }
+            catch(Exception ex)
+            {
+
+            }
+
         }
     }
 }
