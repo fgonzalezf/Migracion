@@ -62,7 +62,7 @@ namespace Migracion_Geodatabase
                         for (int j = 0; j < FieldsEntradaAnot.FieldCount; j++)
                         {
                             string NombreEntrada = FieldsEntradaAnot.get_Field(j).Name;
-                            if (NombreEntrada.ToUpper() != "SHAPE" && NombreEntrada.ToUpper() != "SHAPE_LENGTH" && NombreEntrada.ToUpper() != "SHAPE_AREA")
+                            if (NombreEntrada.ToUpper() != "SHAPE" && NombreEntrada.ToUpper() != "SHAPE_LENGTH" && NombreEntrada.ToUpper() != "SHAPE_AREA" && NombreEntrada.ToUpper() != "OVERRIDE")
                             {
                                 if (NombreSalida.ToUpper() == NombreEntrada.ToUpper())
                                 {
@@ -157,11 +157,11 @@ namespace Migracion_Geodatabase
                     workspaceEdit.StopEditing(true);
 
                     IFeatureCursor searchCursorAnot = featureClassEntradaAnot.Search(null, true);
-                    IFeatureCursor insertCursorAnot = featureClassSalidaAnot.Insert(true);
+                   // IFeatureCursor insertCursorAnot = featureClassSalidaAnot.Insert(true);
 
                     
                     comReleaser.ManageLifetime(searchCursorAnot);
-                    comReleaser.ManageLifetime(insertCursorAnot);
+                    //comReleaser.ManageLifetime(insertCursorAnot);
                     
 
                     workspaceEdit.StartEditing(true);
@@ -169,9 +169,13 @@ namespace Migracion_Geodatabase
 
                     while ((featureAnot = searchCursorAnot.NextFeature()) != null)
                     {
-                        IFeatureBuffer featureBufferAnot = featureClassSalidaAnot.CreateFeatureBuffer();
+                        //IFeatureBuffer featureBufferAnot = featureClassSalidaAnot.CreateFeatureBuffer();
                         // Set the feature buffer's shape and insert it.
                         IGeometry pGeometry = null;
+                        IFeature featureSalidaAnot = featureClassSalidaAnot.CreateFeature();
+                        pGeometry = featureAnot.ShapeCopy;
+                        featureSalidaAnot.Shape = pGeometry;                      
+                        featureSalidaAnot.Store();
                         foreach (string campo in camposIgualesAnot)
                         {
                             //MessageBox.Show(campo);
@@ -184,15 +188,17 @@ namespace Migracion_Geodatabase
                             try
                             {
 
-                                
-                                if (index != -1 && pField.Editable && campo.ToUpper()!="FEATUREID")
+
+                                if (index != -1 && campo.ToUpper() != "FEATUREID" && campo.ToUpper() != "OBJECTID")
                                 {
+                                    featureSalidaAnot.set_Value(indexSalida, featureAnot.get_Value(index));
                                     //featureOut.set_Value(indexSalida, feature.get_Value(index));
-                                    featureBufferAnot.set_Value(indexSalida, featureAnot.get_Value(index));
+                                    //featureBufferAnot.set_Value(indexSalida, featureAnot.get_Value(index));
                                 }
                                 else if (campo.ToUpper()=="FEATUREID")
                                 {
-                                    featureBufferAnot.set_Value(indexSalida, ListOBID[Convert.ToInt32(featureAnot.get_Value(index))]);
+                                    //featureBufferAnot.set_Value(indexSalida, ListOBID[Convert.ToInt32(featureAnot.get_Value(index))]);
+                                    featureSalidaAnot.set_Value(indexSalida, ListOBID[Convert.ToInt32(featureAnot.get_Value(index))]);
                                     
                                 }
                             }
@@ -205,17 +211,19 @@ namespace Migracion_Geodatabase
 
                         }
                         //featureOut.Shape = feature.ShapeCopy;
-                            pGeometry = featureAnot.ShapeCopy;
-                            featureBufferAnot.Shape = pGeometry;
-                            insertCursorAnot.InsertFeature(featureBufferAnot);
-                            comReleaser.ManageLifetime(featureBufferAnot);
+                            
+                            //featureBufferAnot.Shape = pGeometry;
+                            featureSalidaAnot.Store();
+                            //insertCursorAnot.InsertFeature(featureBufferAnot);
+                            //comReleaser.ManageLifetime(featureBufferAnot);
                             Marshal.ReleaseComObject(featureAnot);
+                            Marshal.ReleaseComObject(featureSalidaAnot);
 
 
                     }
 
                     // Flush the buffer to the geodatabase.
-                    insertCursorAnot.Flush();
+                    //insertCursorAnot.Flush();
 
 
 
