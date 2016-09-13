@@ -18,7 +18,10 @@ namespace Migracion_Geodatabase
         }
 
         IWorkspaceFactory pSdeWorkspaceFactory;
+        IWorkspaceFactory pSdeWorkspaceFactoryOut;
         IWorkspace pSdeWorkspace;
+        IWorkspace pSdeWorkspaceOut;
+        IWorkspace pSdeWorkspace2;
         IEnumDatasetName pEnumDSName;
         IDatasetName pSdeDSName;
         IFeatureWorkspace pFeatureWorkspace;
@@ -35,54 +38,34 @@ namespace Migracion_Geodatabase
         ITable pFeatureTableout;
 
 
-        public List<string> RecorrerDatasets(string Geodatabase, string GeodatabaseSalida)
+        public IWorkspace2 workspaceSalida(string Geodatabase)
         {
 
 
-            List<string> Ruta = new List<string>();
+           
             pGputility = new GPUtilitiesClass();
 
             try
             {
                 if (Geodatabase.Contains(".mdb"))
                 {
-                    pSdeWorkspaceFactory = new AccessWorkspaceFactoryClass();
-                    pSdeWorkspace = pSdeWorkspaceFactory.OpenFromFile(Geodatabase, 0);
+                    pSdeWorkspaceFactoryOut = new AccessWorkspaceFactoryClass();
+                    pSdeWorkspaceOut = pSdeWorkspaceFactoryOut.OpenFromFile(Geodatabase, 0);
 
                 }
                 else if (Geodatabase.Contains(".gdb"))
                 {
-                    pSdeWorkspaceFactory = new FileGDBWorkspaceFactoryClass();
-                    pSdeWorkspace = pSdeWorkspaceFactory.OpenFromFile(Geodatabase, 0);
+                    pSdeWorkspaceFactoryOut = new FileGDBWorkspaceFactoryClass();
+                    pSdeWorkspaceOut = pSdeWorkspaceFactoryOut.OpenFromFile(Geodatabase, 0);
                 }
                 else if (Geodatabase.Contains(".sde"))
                 {
-                    pSdeWorkspace = ArcSdeWorkspaceFromFile(GeodatabaseSalida);
-                }
-                pEnumDSName = pSdeWorkspace.get_DatasetNames(esriDatasetType.esriDTAny);
-                pSdeDSName = pEnumDSName.Next();
-
-
-                while (pSdeDSName != null)
-                {
-                    pFeatureWorkspace = pSdeWorkspace as IFeatureWorkspace;
-
-                    if (pSdeDSName.Type == esriDatasetType.esriDTFeatureDataset)
-                    {
-
-
-                        if (pSdeDSName != null)
-                        {
-                            Ruta.Add(pSdeDSName.Name);
-
-                        }
-
-                    }
-                    pSdeDSName = pEnumDSName.Next();
+                    pSdeWorkspaceOut = ArcSdeWorkspaceFromFile(Geodatabase);
                 }
 
+                IWorkspace2 pWorkspace2 = pSdeWorkspaceOut as IWorkspace2;
 
-                return Ruta;
+                return pWorkspace2;
             }
             catch (Exception e)
             {
@@ -106,6 +89,7 @@ namespace Migracion_Geodatabase
             List<string> TipoCargue = new List<string>();
             List<List<string>> Ruta = new List<List<string>>();
             pGputility = new GPUtilitiesClass();
+            IWorkspace2 pWorkspace2;
 
             //try
             //{
@@ -126,7 +110,7 @@ namespace Migracion_Geodatabase
                 }
                 pEnumDSName = pSdeWorkspace.get_DatasetNames(esriDatasetType.esriDTAny);
                 pSdeDSName = pEnumDSName.Next();
-
+                
 
                 while (pSdeDSName != null)
                 {
@@ -334,7 +318,9 @@ namespace Migracion_Geodatabase
                                         if (pFeatureClassout.FeatureType == esriFeatureType.esriFTAnnotation)
                                         {
                                             Tipo.Add("Annotation");
-                                            SetAtoCreateAnot(OutFc, Autocreate);
+                                            pWorkspace2 = workspaceSalida(GeodatabaseSalida);
+                                            SetAtoCreateAnot(pWorkspace2, pDataset.Name, false);
+                                            
                                         }
                                         else
                                         {
@@ -421,7 +407,8 @@ namespace Migracion_Geodatabase
                                             if (pFeatureClass.FeatureType==esriFeatureType.esriFTAnnotation)
                                             {
                                                 Tipo.Add("Annotation");
-                                                SetAtoCreateAnot(OutFc,Autocreate);
+                                                //pWorkspace2 = workspaceSalida(GeodatabaseSalida);
+                                                //SetAtoCreateAnot(pWorkspace2, pDataset.Name, false);
                                             }
                                             else
                                             {
@@ -463,9 +450,10 @@ namespace Migracion_Geodatabase
                                 pDataset = pEnumDataset.Next();
                             }
 
-                        
-                        pSdeDSName = pEnumDSName.Next();
+                            pSdeDSName = pEnumDSName.Next();
+                       
                     }
+                    
                 }
 
 
@@ -603,19 +591,41 @@ namespace Migracion_Geodatabase
             return Ruta;
         }
 
-        private void SetAtoCreateAnot(string Ruta, bool Inval)
+        private void SetAtoCreateAnot(IWorkspace2 Wsp, String Fclass, bool b)
         {
+            IFeatureWorkspace pFws;
+            IFeatureClass pFClassSal;
+            IAnnoClass pFcanotacion;
+            IAnnoClassAdmin pAnoAdmin;
             try
             {
-                IFeatureClass pFeatureClassAnot = pGputility.OpenFeatureClassFromString(Ruta);
-                IAnnoClass pAnnotClass = (IAnnoClass)pFeatureClassAnot;
-                IAnnoClassAdmin pAnnoClassAdmin = (IAnnoClassAdmin)pAnnotClass;
-                pAnnoClassAdmin.AutoCreate = Inval;
-                pAnnoClassAdmin.UpdateProperties();
-            }
-            catch(Exception ex)
-            {
+                if (Wsp.get_NameExists(esriDatasetType.esriDTFeatureClass, Fclass) == true)
+                {
+                    //MessageBox.Show("Desactivando Autocreacion" + Fclass);
+                    pFws = Wsp as IFeatureWorkspace;
+                    pFClassSal = pFws.OpenFeatureClass(Fclass);
+                    if (pFClassSal.FeatureType == esriFeatureType.esriFTAnnotation)
+                    {
+                        pFcanotacion = pFClassSal.Extension as IAnnoClass;
+                        pAnoAdmin = pFcanotacion as IAnnoClassAdmin;
 
+                        if (b == true)
+                        {
+                            pAnoAdmin.AutoCreate = true;
+
+                        }
+                        else
+                        {
+                            pAnoAdmin.AutoCreate = false;
+                        }
+                        pAnoAdmin.UpdateProperties();
+                    }
+                }
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show("vaya se ha producido un error  (Cargue.AutoCrearAnotacion) " + ex.Message + ex.Source);
             }
 
         }
