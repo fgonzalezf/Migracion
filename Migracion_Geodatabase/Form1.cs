@@ -81,7 +81,7 @@ namespace Migracion_Geodatabase
             {
                 if (txtBoxGeodatabaseSalida.Text.Contains(".sde"))
                 {
-                    ListaFeatuaresClass = arreglo.Recorrer(txtBoxGeodatabaseEntrada.Text, txtBoxGeodatabaseSalida.Text, cmbBoxEsquemaSDE.SelectedItem.ToString(), true);
+                    ListaFeatuaresClass = arreglo.Recorrer(txtBoxGeodatabaseEntrada.Text, txtBoxGeodatabaseSalida.Text, cmbBoxEsquemaSDE.SelectedItem.ToString(), false);
                     MessageBox.Show(cmbBoxEsquemaSDE.SelectedItem.ToString());
                 }
                 else
@@ -93,6 +93,33 @@ namespace Migracion_Geodatabase
                 List<string> Tipo = ListaFeatuaresClass[2];
                 List<string> TipoCargue = ListaFeatuaresClass[3];
                 prgBarProceso.Maximum = Rutas_Entrada.Count;
+                using (System.IO.StreamWriter file =
+                new System.IO.StreamWriter(@txtBoxGeodatabaseEntrada.Text + ".txt"))
+                {
+                    for (int i = 0; i < Rutas_Entrada.Count; i++)
+                    {
+                        if (Rutas_Salida[i] != "..." && Tipo[i] != "Annotation" && Tipo[i] != "Raster")
+                        {
+                            // If the line doesn't contain the word 'Second', write the line to the file.
+                            file.WriteLine(
+                            append.AppendTest(txtBoxGeodatabaseEntrada.Text + Path.DirectorySeparatorChar + Rutas_Entrada[i],
+                                                             txtBoxGeodatabaseSalida.Text + Path.DirectorySeparatorChar + Rutas_Salida[i])
+                                );
+                            file.WriteLine(Rutas_Entrada[i] + "    ......      " + Rutas_Salida[i]);
+                            //MessageBox.Show("Cargando" + Rutas_Entrada[i]);                        
+                            lblProgreso.Text = "Cargando" + Rutas_Entrada[i];
+                            lblProgreso.Refresh();
+                            prgBarProceso.PerformStep();
+                        }
+                        else if (Rutas_Salida[i] != "..." && Tipo[i] == "Raster")
+                        {
+                            file.WriteLine(
+                            append.AppendRaster(txtBoxGeodatabaseEntrada.Text + Path.DirectorySeparatorChar + Rutas_Entrada[i],
+                                txtBoxGeodatabaseSalida.Text + Path.DirectorySeparatorChar + Rutas_Salida[i])
+                                );
+                        }
+                    }
+                }
                 
             }
             else if (rdBtnRelacionandoAnotaciones.Checked==true)
@@ -124,26 +151,30 @@ namespace Migracion_Geodatabase
                             if (Tipo[i] == "Annotation")
                             {
                                 // If the line doesn't contain the word 'Second', write the line to the file.
+                                file.WriteLine(
                                 append.InsertFeaturesUsingCursor(txtBoxGeodatabaseEntrada.Text + Path.DirectorySeparatorChar + Rutas_Entrada[i],
                                                                  txtBoxGeodatabaseSalida.Text + Path.DirectorySeparatorChar + Rutas_Salida[i],
-                                                                 Tipo[i]
-                                                                 
-                                    );
+                                                                 Tipo[i])
+                                );
                             }
                             else if (TipoCargue[i] == "Cargar" && Tipo[i] != "Raster")
                             {
+                                file.WriteLine(
                                 append.AppendTest(txtBoxGeodatabaseEntrada.Text + Path.DirectorySeparatorChar + Rutas_Entrada[i],
-                                                            txtBoxGeodatabaseSalida.Text + Path.DirectorySeparatorChar + Rutas_Salida[i]
+                                                            txtBoxGeodatabaseSalida.Text + Path.DirectorySeparatorChar + Rutas_Salida[i])
+                                                            );
                                                             
-                               );
+                               
                             }
 
                             else if (TipoCargue[i] == "Cargar" && Tipo[i] == "Raster")
                             {
+                                file.WriteLine(
                                 append.AppendRaster(txtBoxGeodatabaseEntrada.Text + Path.DirectorySeparatorChar + Rutas_Entrada[i],
-                                    txtBoxGeodatabaseSalida.Text + Path.DirectorySeparatorChar + Rutas_Salida[i]);
+                                    txtBoxGeodatabaseSalida.Text + Path.DirectorySeparatorChar + Rutas_Salida[i])
+                                    );
                             }
-                            file.WriteLine(Rutas_Entrada[i] + "    ......      " + Rutas_Salida[i] + "....." + Tipo[i]+ "....."+ TipoCargue[i]);
+                            
                             //MessageBox.Show("Cargando" + Rutas_Entrada[i]);                        
                             lblProgreso.Text = "Cargando" + Rutas_Entrada[i];
                             lblProgreso.Refresh();
@@ -177,8 +208,9 @@ namespace Migracion_Geodatabase
                         if (Rutas_Salida[i] != "..." && Tipo[i] != "Annotation" && Tipo[i] != "Raster")
                         {
                             // If the line doesn't contain the word 'Second', write the line to the file.
+                            file.WriteLine(
                             append.AppendTest(txtBoxGeodatabaseEntrada.Text + Path.DirectorySeparatorChar + Rutas_Entrada[i],
-                                                             txtBoxGeodatabaseSalida.Text + Path.DirectorySeparatorChar + Rutas_Salida[i]
+                                                             txtBoxGeodatabaseSalida.Text + Path.DirectorySeparatorChar + Rutas_Salida[i])
                                 );
                             file.WriteLine(Rutas_Entrada[i] + "    ......      " + Rutas_Salida[i]);
                             //MessageBox.Show("Cargando" + Rutas_Entrada[i]);                        
@@ -188,8 +220,10 @@ namespace Migracion_Geodatabase
                         }
                         else if (Rutas_Salida[i] != "..." && Tipo[i] == "Raster")
                         {
+                            file.WriteLine(
                             append.AppendRaster(txtBoxGeodatabaseEntrada.Text + Path.DirectorySeparatorChar + Rutas_Entrada[i],
-                                txtBoxGeodatabaseSalida.Text + Path.DirectorySeparatorChar + Rutas_Salida[i]);
+                                txtBoxGeodatabaseSalida.Text + Path.DirectorySeparatorChar + Rutas_Salida[i])
+                                );
                         }
                     }
                 }
@@ -219,8 +253,9 @@ namespace Migracion_Geodatabase
                         if (Rutas_Salida[i] != "..." && Tipo[i]!="Raster")
                         {
                             // If the line doesn't contain the word 'Second', write the line to the file.
+                            file.WriteLine(
                             append.AppendTest(txtBoxGeodatabaseEntrada.Text + Path.DirectorySeparatorChar + Rutas_Entrada[i],
-                                                             txtBoxGeodatabaseSalida.Text + Path.DirectorySeparatorChar + Rutas_Salida[i]
+                                                             txtBoxGeodatabaseSalida.Text + Path.DirectorySeparatorChar + Rutas_Salida[i])
                                 );
                             file.WriteLine(Rutas_Entrada[i] + "    ......      " + Rutas_Salida[i]);
                             //MessageBox.Show("Cargando" + Rutas_Entrada[i]);                        
@@ -230,8 +265,10 @@ namespace Migracion_Geodatabase
                         }
                         else if (Rutas_Salida[i] != "..." && Tipo[i]=="Raster")
                         {
+                            file.WriteLine(
                             append.AppendRaster(txtBoxGeodatabaseEntrada.Text + Path.DirectorySeparatorChar + Rutas_Entrada[i],
-                                txtBoxGeodatabaseSalida.Text + Path.DirectorySeparatorChar + Rutas_Salida[i]);
+                                txtBoxGeodatabaseSalida.Text + Path.DirectorySeparatorChar + Rutas_Salida[i])
+                                );
                         }
                     }
                 }

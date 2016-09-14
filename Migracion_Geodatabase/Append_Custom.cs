@@ -18,18 +18,25 @@ namespace Migracion_Geodatabase
     public class Append_Custom
     {
 
-        public void InsertFeaturesUsingCursor(string sfeatureClassEntrada, string sfeatureClassSalida, string Type)
+        public string InsertFeaturesUsingCursor(string sfeatureClassEntrada, string sfeatureClassSalida, string Type)
         {
+            try
+            {
                 IGPUtilities pGputility = new GPUtilitiesClass();
-                string FeatEntrada=@sfeatureClassEntrada.Replace("_Anot", "");
+                string FeatEntrada = @sfeatureClassEntrada.Replace("_Anot", "");
                 string FeatSalida = @sfeatureClassSalida.Replace("_Anot", "");
                 IFeatureClass featureClassEntrada = pGputility.OpenFeatureClassFromString(FeatEntrada);
-                IFeatureClass featureClassSalida = pGputility.OpenFeatureClassFromString(FeatSalida);               
+                IFeatureClass featureClassSalida = pGputility.OpenFeatureClassFromString(FeatSalida);
                 IFeatureClass featureClassEntradaAnot = pGputility.OpenFeatureClassFromString(@sfeatureClassEntrada);
                 IFeatureClass featureClassSalidaAnot = pGputility.OpenFeatureClassFromString(@sfeatureClassSalida);
 
+                int countInFeat = featureClassEntrada.FeatureCount(null);
+                int countOutFeat = featureClassSalida.FeatureCount(null);
+                int countInAnot = featureClassEntradaAnot.FeatureCount(null);
+                int countOutAnot = featureClassSalidaAnot.FeatureCount(null);
 
-                Dictionary<int, int> ListOBID =new Dictionary<int, int>();
+
+                Dictionary<int, int> ListOBID = new Dictionary<int, int>();
                 using (ComReleaser comReleaser = new ComReleaser())
                 {
 
@@ -82,26 +89,26 @@ namespace Migracion_Geodatabase
                     //Start an edit session and operation
                     workspaceEdit.StartEditing(true);
                     workspaceEdit.StartEditOperation();
-                    
+
 
                     IFeatureCursor searchCursor = featureClassEntrada.Search(null, true);
                     IFeatureCursor insertCursor = featureClassSalida.Insert(true);
 
-                    
+
                     comReleaser.ManageLifetime(insertCursor);
                     comReleaser.ManageLifetime(searchCursor);
-  
+
                     // All of the features to be created are classified as Primary Highways.
                     IFeature feature = null;
                     IFeature featureAnot = null;
-                    int intObjectIdIn=-1;
+                    int intObjectIdIn = -1;
                     while ((feature = searchCursor.NextFeature()) != null)
                     {
                         IFeatureBuffer featureBuffer = featureClassSalida.CreateFeatureBuffer();
                         // Set the feature buffer's shape and insert it.
                         foreach (string campo in camposIguales)
                         {
-                                                     
+
                             int index = FieldsEntrada.FindField(campo);
                             int indexSalida = FieldsSalida.FindField(campo);
                             IField pField = feature.Fields.get_Field(index);
@@ -113,27 +120,27 @@ namespace Migracion_Geodatabase
                                 }
                                 if (index != -1 && pField.Editable)
                                 {
-                                    
+
                                     featureBuffer.set_Value(indexSalida, feature.get_Value(index));
                                 }
                             }
                             catch (Exception ex)
                             {
-                                MessageBox.Show("Error insertando " + ex.Message + " " + campo + sfeatureClassEntrada.Replace("_Anot",""));
+                                MessageBox.Show("Error insertando " + ex.Message + " " + campo + sfeatureClassEntrada.Replace("_Anot", ""));
 
                             }
 
 
                         }
-                                   
-                            featureBuffer.Shape = feature.ShapeCopy;
-                            object X = insertCursor.InsertFeature(featureBuffer);
 
-                            int ObjectIdOut = Convert.ToInt32(X);
-                            ListOBID.Add(intObjectIdIn, ObjectIdOut);
-                            comReleaser.ManageLifetime(featureBuffer);
-                            Marshal.ReleaseComObject(feature);
-                        
+                        featureBuffer.Shape = feature.ShapeCopy;
+                        object X = insertCursor.InsertFeature(featureBuffer);
+
+                        int ObjectIdOut = Convert.ToInt32(X);
+                        ListOBID.Add(intObjectIdIn, ObjectIdOut);
+                        comReleaser.ManageLifetime(featureBuffer);
+                        Marshal.ReleaseComObject(feature);
+
                     }
 
                     // Flush the buffer to the geodatabase.
@@ -144,31 +151,31 @@ namespace Migracion_Geodatabase
                     workspaceEdit.StopEditing(true);
 
                     IFeatureCursor searchCursorAnot = featureClassEntradaAnot.Search(null, true);
-                   // IFeatureCursor insertCursorAnot = featureClassSalidaAnot.Insert(true);
+                    // IFeatureCursor insertCursorAnot = featureClassSalidaAnot.Insert(true);
 
-                    
+
                     comReleaser.ManageLifetime(searchCursorAnot);
                     //comReleaser.ManageLifetime(insertCursorAnot);
-                    
+
 
                     workspaceEdit.StartEditing(true);
                     workspaceEdit.StartEditOperation();
 
                     while ((featureAnot = searchCursorAnot.NextFeature()) != null)
                     {
-                        
+
                         // Set the feature buffer's shape and insert it.
                         IGeometry pGeometry = null;
                         IFeature featureSalidaAnot = featureClassSalidaAnot.CreateFeature();
-                        
-                        
+
+
                         foreach (string campo in camposIgualesAnot)
                         {
-                            
+
                             int index = FieldsEntradaAnot.FindField(campo);
                             int indexSalida = FieldsSalidaAnot.FindField(campo);
                             IField pField = featureAnot.Fields.get_Field(index);
-                            
+
                             try
                             {
 
@@ -176,9 +183,9 @@ namespace Migracion_Geodatabase
                                 if (index != -1 && campo.ToUpper() != "FEATUREID" && campo.ToUpper() != "OBJECTID")
                                 {
                                     featureSalidaAnot.set_Value(indexSalida, featureAnot.get_Value(index));
-                                    
+
                                 }
-                                else if (campo.ToUpper()=="FEATUREID")
+                                else if (campo.ToUpper() == "FEATUREID")
                                 {
                                     try
                                     {
@@ -188,7 +195,7 @@ namespace Migracion_Geodatabase
                                     {
                                         featureSalidaAnot.set_Value(indexSalida, null);
                                     }
-                                    
+
                                 }
                             }
                             catch (Exception ex)
@@ -199,36 +206,87 @@ namespace Migracion_Geodatabase
 
 
                         }
-                        
-                            IAnnotationFeature pAnnotateFeatureAnotIn = featureAnot as IAnnotationFeature;
-                            IAnnotationFeature pAnnotateFeatureAnotOut = featureSalidaAnot as IAnnotationFeature;
 
-                            pAnnotateFeatureAnotOut.Annotation = pAnnotateFeatureAnotIn.Annotation;
-                            featureSalidaAnot = pAnnotateFeatureAnotOut as IFeature;
-                            
-                            
-                            pGeometry = featureAnot.ShapeCopy;
-                            featureSalidaAnot.Shape = pGeometry;                       
-                            featureSalidaAnot.Store();
-                            
-                            Marshal.ReleaseComObject(featureAnot);
-                            Marshal.ReleaseComObject(featureSalidaAnot);
+                        IAnnotationFeature pAnnotateFeatureAnotIn = featureAnot as IAnnotationFeature;
+                        IAnnotationFeature pAnnotateFeatureAnotOut = featureSalidaAnot as IAnnotationFeature;
+
+                        pAnnotateFeatureAnotOut.Annotation = pAnnotateFeatureAnotIn.Annotation;
+                        featureSalidaAnot = pAnnotateFeatureAnotOut as IFeature;
+
+
+                        pGeometry = featureAnot.ShapeCopy;
+                        featureSalidaAnot.Shape = pGeometry;
+                        featureSalidaAnot.Store();
+
+                        Marshal.ReleaseComObject(featureAnot);
+                        Marshal.ReleaseComObject(featureSalidaAnot);
 
 
                     }
-                  
+
                     workspaceEdit.StopEditOperation();
                     workspaceEdit.StopEditing(true);
 
-                    
+
                 }
+
+
+                // resultados
+                int countOutFeatOut = featureClassSalida.FeatureCount(null);
+                int countOutAnotOut = featureClassSalidaAnot.FeatureCount(null);
+
+                string[] separators = { "/" };
+                string[] RutaCompletaInAnot = sfeatureClassEntrada.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+                int indexIn = RutaCompletaInAnot.Length;
+
+                string[] RutaCompletaOutAnot = sfeatureClassSalida.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+                int indexOut = RutaCompletaInAnot.Length;
+
+                string Resultado = RutaCompletaInAnot[indexIn - 1] + "  " +
+                    countInAnot + "  " +
+                    RutaCompletaOutAnot[indexOut - 1] + "  " +
+                    (countOutAnotOut - countOutAnot).ToString()+ "\n"+
+                    RutaCompletaInAnot[indexIn - 1].Replace("_Anot","") + "  " +
+                    countInFeat + "  " +
+                    RutaCompletaOutAnot[indexOut - 1].Replace("_Anot", "") + "  " +
+                    (countOutFeatOut - countOutFeat).ToString() + "\n"
+
+                    ;
+
+
+                return Resultado;
             }
-            
+                
+            catch(Exception Ex)
+            {
+                MessageBox.Show("Error Cargando la capa: " + sfeatureClassEntrada + "..." + Ex.Message);
+                return "";
+            }
+        }
+  
     
         
 
-        public void AppendTest(string sfeatureClassEntrada, string sfeatureClassSalida)
+        public string AppendTest(string sfeatureClassEntrada, string sfeatureClassSalida)
         {
+            IGPUtilities pGputility = new GPUtilitiesClass();
+            IFeatureClass pCountFeatureIn;
+            IFeatureClass pCountFeatureOutIn;
+            IFeatureClass pCountFeatureOut;
+            ITable pCountTableIn;
+            ITable pCountTableOut;
+            ITable pCountTableOutIn;
+            String Resultado;
+            int countOutIn=0;
+            try{
+                pCountFeatureOutIn = pGputility.OpenFeatureClassFromString(sfeatureClassSalida);
+                countOutIn=pCountFeatureOutIn.FeatureCount(null);
+            }
+            catch{
+                pCountTableOutIn = pGputility.OpenTableFromString(sfeatureClassSalida);
+                countOutIn= pCountTableOutIn.RowCount(null);
+            }
+            
             try
             {
             IGeoProcessor2 gp = new GeoProcessorClass();
@@ -244,9 +302,50 @@ namespace Migracion_Geodatabase
 
 
             }
+
+            try
+            {
+               pCountFeatureIn = pGputility.OpenFeatureClassFromString(sfeatureClassEntrada);
+               pCountFeatureOut = pGputility.OpenFeatureClassFromString(sfeatureClassSalida);
+               string[] separators = {"/"};
+               string[] RutaCompletaIn = sfeatureClassEntrada.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+               int indexIn = RutaCompletaIn.Length;
+
+               string[] RutaCompletaOut = sfeatureClassSalida.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+               int indexOut = RutaCompletaIn.Length;
+
+               Resultado = RutaCompletaIn[indexIn - 1] + "  " +
+                   pCountFeatureIn.FeatureCount(null).ToString() + "  " +
+                   RutaCompletaOut[indexOut - 1] + "  " +
+                   (pCountFeatureOut.FeatureCount(null) - countOutIn).ToString();
+
+
+
+            }
+            catch
+            {
+                pCountTableIn = pGputility.OpenTableFromString(sfeatureClassEntrada);
+                pCountTableOut = pGputility.OpenTableFromString(sfeatureClassSalida);
+
+                string[] separators = { "/" };
+                string[] RutaCompletaIn = sfeatureClassEntrada.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+                int indexIn = RutaCompletaIn.Length;
+
+                string[] RutaCompletaOut = sfeatureClassSalida.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+                int indexOut = RutaCompletaIn.Length;
+
+                Resultado = RutaCompletaIn[indexIn - 1] + "  " +
+                    pCountTableIn.RowCount(null).ToString() + "  " +
+                    RutaCompletaOut[indexOut - 1] + "  " +
+                    (pCountTableOut.RowCount(null) - countOutIn).ToString();
+
+            }
+
+
+            return Resultado;
         }
 
-        public void AppendRaster(string sfeatureClassEntrada, string sfeatureClassSalida)
+        public string AppendRaster(string sfeatureClassEntrada, string sfeatureClassSalida)
         {
             try
             {
@@ -256,11 +355,12 @@ namespace Migracion_Geodatabase
                 parameters.Add(@sfeatureClassSalida);
                 
                 gp.Execute("Mosaic_Management", parameters, null);
+                return "";
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Error cargando El Raster " + sfeatureClassEntrada);
-
+                return "";
 
             }
         }

@@ -321,7 +321,7 @@ namespace Migracion_Geodatabase
                                         {
                                             Tipo.Add("Annotation");
                                             pWorkspace2 = workspaceSalida(GeodatabaseSalida);
-                                            SetAtoCreateAnot(pWorkspace2, pDataset.Name, false);
+                                            SetAtoCreateAnot(pWorkspace2, pDataset.Name, Autocreate );
                                             
                                         }
                                         else
@@ -410,8 +410,8 @@ namespace Migracion_Geodatabase
                                             if (pFeatureClass.FeatureType==esriFeatureType.esriFTAnnotation)
                                             {
                                                 Tipo.Add("Annotation");
-                                                //pWorkspace2 = workspaceSalida(GeodatabaseSalida);
-                                                //SetAtoCreateAnot(pWorkspace2, pDataset.Name, false);
+                                                pWorkspace2 = workspaceSalida(GeodatabaseSalida);
+                                                SetAtoCreateAnot(pWorkspace2, pDataset.Name, Autocreate);
                                             }
                                             else
                                             {
