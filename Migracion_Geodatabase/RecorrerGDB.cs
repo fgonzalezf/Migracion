@@ -36,6 +36,8 @@ namespace Migracion_Geodatabase
         IFeatureClass pFeatureClassoutAnot;
         ITable pFeatureTable;
         ITable pFeatureTableout;
+        IRasterDataset pRasterDatasetIn;
+        IRasterDataset pRasterDatasetOut;
 
 
         public IWorkspace2 workspaceSalida(string Geodatabase)
@@ -393,6 +395,7 @@ namespace Migracion_Geodatabase
                                         
                                         try
                                         {
+                                           
                                             pFeatureClassout = pGputility.OpenFeatureClassFromString(OutFc);
                                             pFeatureClass = pGputility.OpenFeatureClassFromString(InFc);
                                         }
@@ -453,6 +456,92 @@ namespace Migracion_Geodatabase
                             pSdeDSName = pEnumDSName.Next();
                        
                     }
+
+                    else if (pSdeDSName.Type == esriDatasetType.esriDTRasterDataset)
+                    {
+                        if (EsquemaSDE == "")
+                        {
+                            
+                            string nameFc = pSdeDSName.Name;
+                            string InFc = @Geodatabase + Path.DirectorySeparatorChar + pSdeDSName.Name;
+                            string OutFc = @GeodatabaseSalida + Path.DirectorySeparatorChar + pSdeDSName.Name;
+                            pRasterDatasetIn = pGputility.OpenRasterDatasetFromString(InFc);
+                            
+                            
+                                try
+                                {
+                                    pRasterDatasetOut = pGputility.OpenRasterDatasetFromString(OutFc);
+                                }
+                                catch
+                                {
+                                    pRasterDatasetOut = null;
+                                }
+                                if (pRasterDatasetOut != null)
+                                {
+
+
+                                    Ruta1.Add(nameFc);
+                                    Ruta2.Add(nameFc);
+                                    Tipo.Add("Raster");
+                                    TipoCargue.Add("Cargar");
+
+
+                                }
+                                else
+                                {
+                                    Ruta1.Add(nameFc);
+                                    Ruta2.Add("...");
+                                    Tipo.Add("Raster");
+                                    TipoCargue.Add("Cargar");
+                                }
+                            
+
+
+                        }
+                        else
+                        {
+
+                    
+                            string nameFc = pSdeDSName.Name;
+                            string nameFcOut = EsquemaSDE + "." + pSdeDSName.Name;
+                            string InFc = @Geodatabase + Path.DirectorySeparatorChar + pSdeDSName.Name;
+                            string OutFc = @GeodatabaseSalida + Path.DirectorySeparatorChar + EsquemaSDE + "." + pSdeDSName.Name;
+                            pRasterDatasetIn = pGputility.OpenRasterDatasetFromString(InFc);
+
+                            try
+                            {
+                                pRasterDatasetOut = pGputility.OpenRasterDatasetFromString(OutFc);
+                            }
+                            catch
+                            {
+                                pRasterDatasetOut = null;
+                            }
+                            if (pRasterDatasetOut != null)
+                            {
+
+
+                                Ruta1.Add(nameFc);
+                                Ruta2.Add(nameFcOut);
+                                Tipo.Add("Raster");
+                                TipoCargue.Add("Cargar");
+
+
+                            }
+                            else
+                            {
+                                Ruta1.Add(nameFc);
+                                Ruta2.Add("...");
+                                Tipo.Add("Raster");
+                                TipoCargue.Add("Cargar");
+                            }
+
+
+
+                        }
+                        
+                        pSdeDSName = pEnumDSName.Next();
+                    }
+                    
                     
                 }
 
@@ -609,15 +698,12 @@ namespace Migracion_Geodatabase
                         pFcanotacion = pFClassSal.Extension as IAnnoClass;
                         pAnoAdmin = pFcanotacion as IAnnoClassAdmin;
 
-                        if (b == true)
+                        if (pAnoAdmin.AutoCreate!=b)
                         {
-                            pAnoAdmin.AutoCreate = true;
+                            pAnoAdmin.AutoCreate = b;
 
                         }
-                        else
-                        {
-                            pAnoAdmin.AutoCreate = false;
-                        }
+                        
                         pAnoAdmin.UpdateProperties();
                     }
                 }
@@ -625,7 +711,7 @@ namespace Migracion_Geodatabase
 
             catch (Exception ex)
             {
-                MessageBox.Show("vaya se ha producido un error  (Cargue.AutoCrearAnotacion) " + ex.Message + ex.Source);
+                MessageBox.Show("Error " + ex.Message + ex.Source);
             }
 
         }

@@ -18,6 +18,7 @@ namespace Migracion_Geodatabase
             //Valores combobox
             cmbBoxEsquemaSDE.Items.Add("ADM25MIL");
             cmbBoxEsquemaSDE.Items.Add("ADMCIENMIL");
+            cmbBoxEsquemaSDE.Items.Add("ADMPRUEBAS");
 
         }
 
@@ -129,12 +130,18 @@ namespace Migracion_Geodatabase
                                                                  
                                     );
                             }
-                            else if (TipoCargue[i]=="Cargar")
+                            else if (TipoCargue[i] == "Cargar" && Tipo[i] != "Raster")
                             {
                                 append.AppendTest(txtBoxGeodatabaseEntrada.Text + Path.DirectorySeparatorChar + Rutas_Entrada[i],
                                                             txtBoxGeodatabaseSalida.Text + Path.DirectorySeparatorChar + Rutas_Salida[i]
                                                             
                                );
+                            }
+
+                            else if (TipoCargue[i] == "Cargar" && Tipo[i] == "Raster")
+                            {
+                                append.AppendRaster(txtBoxGeodatabaseEntrada.Text + Path.DirectorySeparatorChar + Rutas_Entrada[i],
+                                    txtBoxGeodatabaseSalida.Text + Path.DirectorySeparatorChar + Rutas_Salida[i]);
                             }
                             file.WriteLine(Rutas_Entrada[i] + "    ......      " + Rutas_Salida[i] + "....." + Tipo[i]+ "....."+ TipoCargue[i]);
                             //MessageBox.Show("Cargando" + Rutas_Entrada[i]);                        
@@ -167,7 +174,7 @@ namespace Migracion_Geodatabase
                 {
                     for (int i = 0; i < Rutas_Entrada.Count; i++)
                     {
-                        if (Rutas_Salida[i] != "..." && Tipo[i]!="Annotation" )
+                        if (Rutas_Salida[i] != "..." && Tipo[i] != "Annotation" && Tipo[i] != "Raster")
                         {
                             // If the line doesn't contain the word 'Second', write the line to the file.
                             append.AppendTest(txtBoxGeodatabaseEntrada.Text + Path.DirectorySeparatorChar + Rutas_Entrada[i],
@@ -178,6 +185,11 @@ namespace Migracion_Geodatabase
                             lblProgreso.Text = "Cargando" + Rutas_Entrada[i];
                             lblProgreso.Refresh();
                             prgBarProceso.PerformStep();
+                        }
+                        else if (Rutas_Salida[i] != "..." && Tipo[i] == "Raster")
+                        {
+                            append.AppendRaster(txtBoxGeodatabaseEntrada.Text + Path.DirectorySeparatorChar + Rutas_Entrada[i],
+                                txtBoxGeodatabaseSalida.Text + Path.DirectorySeparatorChar + Rutas_Salida[i]);
                         }
                     }
                 }
@@ -204,7 +216,7 @@ namespace Migracion_Geodatabase
                 {
                     for (int i = 0; i < Rutas_Entrada.Count; i++)
                     {
-                        if (Rutas_Salida[i] != "...")
+                        if (Rutas_Salida[i] != "..." && Tipo[i]!="Raster")
                         {
                             // If the line doesn't contain the word 'Second', write the line to the file.
                             append.AppendTest(txtBoxGeodatabaseEntrada.Text + Path.DirectorySeparatorChar + Rutas_Entrada[i],
@@ -215,6 +227,11 @@ namespace Migracion_Geodatabase
                             lblProgreso.Text = "Cargando" + Rutas_Entrada[i];
                             lblProgreso.Refresh();
                             prgBarProceso.PerformStep();
+                        }
+                        else if (Rutas_Salida[i] != "..." && Tipo[i]=="Raster")
+                        {
+                            append.AppendRaster(txtBoxGeodatabaseEntrada.Text + Path.DirectorySeparatorChar + Rutas_Entrada[i],
+                                txtBoxGeodatabaseSalida.Text + Path.DirectorySeparatorChar + Rutas_Salida[i]);
                         }
                     }
                 }

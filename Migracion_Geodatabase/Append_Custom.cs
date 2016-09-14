@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using ESRI.ArcGIS.Geoprocessing;
 using ESRI.ArcGIS.esriSystem;
 using System.Runtime.InteropServices;
+using ESRI.ArcGIS.Carto;
 
 
 namespace Migracion_Geodatabase
@@ -23,8 +24,7 @@ namespace Migracion_Geodatabase
                 string FeatEntrada=@sfeatureClassEntrada.Replace("_Anot", "");
                 string FeatSalida = @sfeatureClassSalida.Replace("_Anot", "");
                 IFeatureClass featureClassEntrada = pGputility.OpenFeatureClassFromString(FeatEntrada);
-                IFeatureClass featureClassSalida = pGputility.OpenFeatureClassFromString(FeatSalida);
-                //MessageBox.Show(@sfeatureClassEntrada.Replace("_Anot", "") +"..."+@sfeatureClassEntrada);
+                IFeatureClass featureClassSalida = pGputility.OpenFeatureClassFromString(FeatSalida);               
                 IFeatureClass featureClassEntradaAnot = pGputility.OpenFeatureClassFromString(@sfeatureClassEntrada);
                 IFeatureClass featureClassSalidaAnot = pGputility.OpenFeatureClassFromString(@sfeatureClassSalida);
 
@@ -43,7 +43,7 @@ namespace Migracion_Geodatabase
                         for (int j = 0; j < FieldsEntrada.FieldCount; j++)
                         {
                             string NombreEntrada = FieldsEntrada.get_Field(j).Name;
-                            if (NombreEntrada.ToUpper() != "SHAPE" && NombreEntrada.ToUpper() != "SHAPE_LENGTH" && NombreEntrada.ToUpper() != "SHAPE_AREA")
+                            if (NombreEntrada.ToUpper() != "SHAPE" && NombreEntrada.ToUpper() != "SHAPE_LENGTH" && NombreEntrada.ToUpper() != "SHAPE_AREA" && NombreEntrada.ToUpper() != "OVERRIDE")
                             {
                                 if (NombreSalida.ToUpper() == NombreEntrada.ToUpper())
                                 {
@@ -82,14 +82,7 @@ namespace Migracion_Geodatabase
                     //Start an edit session and operation
                     workspaceEdit.StartEditing(true);
                     workspaceEdit.StartEditOperation();
-                    // Create a feature buffer.
-                    //IFeatureBuffer featureBuffer = featureClass.CreateFeatureBuffer();
                     
-                    
-                    //comReleaser.ManageLifetime(featureBuffer);
-                    //comReleaser.ManageLifetime(featureBufferAnot);
-
-                    // Create an insert cursor.
 
                     IFeatureCursor searchCursor = featureClassEntrada.Search(null, true);
                     IFeatureCursor insertCursor = featureClassSalida.Insert(true);
@@ -97,10 +90,7 @@ namespace Migracion_Geodatabase
                     
                     comReleaser.ManageLifetime(insertCursor);
                     comReleaser.ManageLifetime(searchCursor);
-                    
-
-                    //IFeature featureOut = featureClassSalida.CreateFeature();
-
+  
                     // All of the features to be created are classified as Primary Highways.
                     IFeature feature = null;
                     IFeature featureAnot = null;
@@ -111,9 +101,7 @@ namespace Migracion_Geodatabase
                         // Set the feature buffer's shape and insert it.
                         foreach (string campo in camposIguales)
                         {
-                            //MessageBox.Show(campo);
-
-                            
+                                                     
                             int index = FieldsEntrada.FindField(campo);
                             int indexSalida = FieldsSalida.FindField(campo);
                             IField pField = feature.Fields.get_Field(index);
@@ -125,7 +113,7 @@ namespace Migracion_Geodatabase
                                 }
                                 if (index != -1 && pField.Editable)
                                 {
-                                    //featureOut.set_Value(indexSalida, feature.get_Value(index));
+                                    
                                     featureBuffer.set_Value(indexSalida, feature.get_Value(index));
                                 }
                             }
@@ -137,8 +125,7 @@ namespace Migracion_Geodatabase
 
 
                         }
-                        //featureOut.Shape = feature.ShapeCopy;
-                        
+                                   
                             featureBuffer.Shape = feature.ShapeCopy;
                             object X = insertCursor.InsertFeature(featureBuffer);
 
@@ -169,18 +156,15 @@ namespace Migracion_Geodatabase
 
                     while ((featureAnot = searchCursorAnot.NextFeature()) != null)
                     {
-                        //IFeatureBuffer featureBufferAnot = featureClassSalidaAnot.CreateFeatureBuffer();
+                        
                         // Set the feature buffer's shape and insert it.
                         IGeometry pGeometry = null;
                         IFeature featureSalidaAnot = featureClassSalidaAnot.CreateFeature();
-                        pGeometry = featureAnot.ShapeCopy;
-                        featureSalidaAnot.Shape = pGeometry;                      
-                        featureSalidaAnot.Store();
+                        
+                        
                         foreach (string campo in camposIgualesAnot)
                         {
-                            //MessageBox.Show(campo);
-
-
+                            
                             int index = FieldsEntradaAnot.FindField(campo);
                             int indexSalida = FieldsSalidaAnot.FindField(campo);
                             IField pField = featureAnot.Fields.get_Field(index);
@@ -192,13 +176,18 @@ namespace Migracion_Geodatabase
                                 if (index != -1 && campo.ToUpper() != "FEATUREID" && campo.ToUpper() != "OBJECTID")
                                 {
                                     featureSalidaAnot.set_Value(indexSalida, featureAnot.get_Value(index));
-                                    //featureOut.set_Value(indexSalida, feature.get_Value(index));
-                                    //featureBufferAnot.set_Value(indexSalida, featureAnot.get_Value(index));
+                                    
                                 }
                                 else if (campo.ToUpper()=="FEATUREID")
                                 {
-                                    //featureBufferAnot.set_Value(indexSalida, ListOBID[Convert.ToInt32(featureAnot.get_Value(index))]);
-                                    featureSalidaAnot.set_Value(indexSalida, ListOBID[Convert.ToInt32(featureAnot.get_Value(index))]);
+                                    try
+                                    {
+                                        featureSalidaAnot.set_Value(indexSalida, ListOBID[Convert.ToInt32(featureAnot.get_Value(index))]);
+                                    }
+                                    catch
+                                    {
+                                        featureSalidaAnot.set_Value(indexSalida, null);
+                                    }
                                     
                                 }
                             }
@@ -210,23 +199,24 @@ namespace Migracion_Geodatabase
 
 
                         }
-                        //featureOut.Shape = feature.ShapeCopy;
+                        
+                            IAnnotationFeature pAnnotateFeatureAnotIn = featureAnot as IAnnotationFeature;
+                            IAnnotationFeature pAnnotateFeatureAnotOut = featureSalidaAnot as IAnnotationFeature;
+
+                            pAnnotateFeatureAnotOut.Annotation = pAnnotateFeatureAnotIn.Annotation;
+                            featureSalidaAnot = pAnnotateFeatureAnotOut as IFeature;
                             
-                            //featureBufferAnot.Shape = pGeometry;
+                            
+                            pGeometry = featureAnot.ShapeCopy;
+                            featureSalidaAnot.Shape = pGeometry;                       
                             featureSalidaAnot.Store();
-                            //insertCursorAnot.InsertFeature(featureBufferAnot);
-                            //comReleaser.ManageLifetime(featureBufferAnot);
+                            
                             Marshal.ReleaseComObject(featureAnot);
                             Marshal.ReleaseComObject(featureSalidaAnot);
 
 
                     }
-
-                    // Flush the buffer to the geodatabase.
-                    //insertCursorAnot.Flush();
-
-
-
+                  
                     workspaceEdit.StopEditOperation();
                     workspaceEdit.StopEditing(true);
 
@@ -251,6 +241,25 @@ namespace Migracion_Geodatabase
             catch(Exception ex)
             {
                 MessageBox.Show("Error cargando la capa " + sfeatureClassEntrada);
+
+
+            }
+        }
+
+        public void AppendRaster(string sfeatureClassEntrada, string sfeatureClassSalida)
+        {
+            try
+            {
+                IGeoProcessor2 gp = new GeoProcessorClass();
+                IVariantArray parameters = new VarArrayClass();
+                parameters.Add(@sfeatureClassEntrada);
+                parameters.Add(@sfeatureClassSalida);
+                
+                gp.Execute("Mosaic_Management", parameters, null);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error cargando El Raster " + sfeatureClassEntrada);
 
 
             }
