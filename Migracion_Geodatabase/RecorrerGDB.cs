@@ -295,14 +295,17 @@ namespace Migracion_Geodatabase
                                     string nameFc = pSdeDSName.Name + Path.DirectorySeparatorChar + pDataset.Name;
                                     //Anotaciones
                                     string OutFcAnot = @GeodatabaseSalida + Path.DirectorySeparatorChar + pSdeDSName.Name + Path.DirectorySeparatorChar + pDataset.Name + "_Anot";
-                                    
+                                    string InFcAnot = @Geodatabase + Path.DirectorySeparatorChar + pSdeDSName.Name + Path.DirectorySeparatorChar + pDataset.Name + "_Anot";
+                                    IFeatureClass pFeatureClassAnotIn=null;
                                     try
                                     {
                                         pFeatureClassoutAnot = pGputility.OpenFeatureClassFromString(OutFcAnot);
+                                        pFeatureClassAnotIn = pGputility.OpenFeatureClassFromString(InFcAnot);
                                     }
                                     catch (Exception ex)
                                     {
                                         pFeatureClassoutAnot = null;
+                                        pFeatureClassAnotIn = null;
                                     }
                                     try
                                     {
@@ -313,10 +316,12 @@ namespace Migracion_Geodatabase
                                         pFeatureClassout = null;
                                     }
 
-                                    if (pFeatureClassout != null)
+                                    if (pFeatureClassout != null )
                                     {
                                         Ruta1.Add(nameFc);
                                         Ruta2.Add(nameFc);
+
+
                                         if (pFeatureClassout.FeatureType == esriFeatureType.esriFTAnnotation)
                                         {
                                             Tipo.Add("Annotation");
@@ -328,9 +333,16 @@ namespace Migracion_Geodatabase
                                         {
                                             Tipo.Add("Feature");
                                         }
-                                        if (pFeatureClassoutAnot != null)
+                                        if (pFeatureClassoutAnot != null && pFeatureClassAnotIn !=null)
                                         {
-                                            TipoCargue.Add("No_Cargar");
+                                            if (pFeatureClassAnotIn.FeatureCount(null) == 0)
+                                            {
+                                                TipoCargue.Add("Cargar");
+                                            }
+                                            else
+                                            {
+                                                TipoCargue.Add("No_Cargar");
+                                            }
                                         }
                                         else
                                         {
@@ -381,8 +393,22 @@ namespace Migracion_Geodatabase
                                         string OutFc = @GeodatabaseSalida + Path.DirectorySeparatorChar +EsquemaSDE+"."+ pSdeDSName.Name + Path.DirectorySeparatorChar +EsquemaSDE+"."+ pDataset.Name;
                                         string nameFc = pSdeDSName.Name + Path.DirectorySeparatorChar + pDataset.Name;
                                         string nameFcOut = EsquemaSDE + "." + pSdeDSName.Name + Path.DirectorySeparatorChar + EsquemaSDE + "." + pDataset.Name;
-
+                                        string InFcAnot = @Geodatabase + Path.DirectorySeparatorChar + pSdeDSName.Name + Path.DirectorySeparatorChar + pDataset.Name + "_Anot";
                                         string OutFcAnot = @GeodatabaseSalida + Path.DirectorySeparatorChar + EsquemaSDE + "." + pSdeDSName.Name + Path.DirectorySeparatorChar + EsquemaSDE + "." + pDataset.Name +"_Anot";
+                                        
+                                        IFeatureClass pFeatureClassAnotIn = null;
+                                        try
+                                        {
+                                            pFeatureClassoutAnot = pGputility.OpenFeatureClassFromString(OutFcAnot);
+                                            pFeatureClassAnotIn = pGputility.OpenFeatureClassFromString(InFcAnot);
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            pFeatureClassoutAnot = null;
+                                            pFeatureClassAnotIn = null;
+                                        }
+                                        
+                                        
                                         try
                                         {
                                             pFeatureClassoutAnot = pGputility.OpenFeatureClassFromString(OutFcAnot);
@@ -417,14 +443,23 @@ namespace Migracion_Geodatabase
                                             {
                                                 Tipo.Add("Feature");
                                             }
-                                            if (pFeatureClassoutAnot != null)
+                                            if (pFeatureClassoutAnot != null && pFeatureClassAnotIn != null)
                                             {
-                                                TipoCargue.Add("No_Cargar");
+                                                if (pFeatureClassAnotIn.FeatureCount(null) == 0)
+                                                {
+                                                    TipoCargue.Add("Cargar");
+                                                }
+                                                else
+                                                {
+                                                    TipoCargue.Add("No_Cargar");
+                                                }
                                             }
                                             else
                                             {
                                                 TipoCargue.Add("Cargar");
                                             }
+
+
                                             
                                                 
                                                 
