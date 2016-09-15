@@ -66,7 +66,7 @@
             this.groupBox1.Controls.Add(this.txtBoxGeodatabaseEntrada);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(664, 223);
+            this.groupBox1.Size = new System.Drawing.Size(664, 228);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Migración Geodatabase";
@@ -92,7 +92,7 @@
             // lblProgreso
             // 
             this.lblProgreso.AutoSize = true;
-            this.lblProgreso.Location = new System.Drawing.Point(6, 168);
+            this.lblProgreso.Location = new System.Drawing.Point(10, 175);
             this.lblProgreso.Name = "lblProgreso";
             this.lblProgreso.Size = new System.Drawing.Size(16, 13);
             this.lblProgreso.TabIndex = 12;
@@ -101,7 +101,7 @@
             // rdBtnSinRelacionarAnotaciones
             // 
             this.rdBtnSinRelacionarAnotaciones.AutoSize = true;
-            this.rdBtnSinRelacionarAnotaciones.Location = new System.Drawing.Point(431, 150);
+            this.rdBtnSinRelacionarAnotaciones.Location = new System.Drawing.Point(487, 150);
             this.rdBtnSinRelacionarAnotaciones.Name = "rdBtnSinRelacionarAnotaciones";
             this.rdBtnSinRelacionarAnotaciones.Size = new System.Drawing.Size(156, 17);
             this.rdBtnSinRelacionarAnotaciones.TabIndex = 11;
@@ -113,7 +113,7 @@
             // rdBtnRelacionandoAnotaciones
             // 
             this.rdBtnRelacionandoAnotaciones.AutoSize = true;
-            this.rdBtnRelacionandoAnotaciones.Location = new System.Drawing.Point(267, 150);
+            this.rdBtnRelacionandoAnotaciones.Location = new System.Drawing.Point(304, 150);
             this.rdBtnRelacionandoAnotaciones.Name = "rdBtnRelacionandoAnotaciones";
             this.rdBtnRelacionandoAnotaciones.Size = new System.Drawing.Size(156, 17);
             this.rdBtnRelacionandoAnotaciones.TabIndex = 10;
@@ -125,7 +125,7 @@
             // rdBtnSinAnotaciones
             // 
             this.rdBtnSinAnotaciones.AutoSize = true;
-            this.rdBtnSinAnotaciones.Location = new System.Drawing.Point(151, 150);
+            this.rdBtnSinAnotaciones.Location = new System.Drawing.Point(173, 150);
             this.rdBtnSinAnotaciones.Name = "rdBtnSinAnotaciones";
             this.rdBtnSinAnotaciones.Size = new System.Drawing.Size(102, 17);
             this.rdBtnSinAnotaciones.TabIndex = 9;
@@ -149,7 +149,7 @@
             // btnMigrar
             // 
             this.btnMigrar.Enabled = false;
-            this.btnMigrar.Location = new System.Drawing.Point(593, 191);
+            this.btnMigrar.Location = new System.Drawing.Point(593, 196);
             this.btnMigrar.Name = "btnMigrar";
             this.btnMigrar.Size = new System.Drawing.Size(51, 23);
             this.btnMigrar.TabIndex = 7;
@@ -159,7 +159,7 @@
             // 
             // prgBarProceso
             // 
-            this.prgBarProceso.Location = new System.Drawing.Point(9, 193);
+            this.prgBarProceso.Location = new System.Drawing.Point(9, 197);
             this.prgBarProceso.Name = "prgBarProceso";
             this.prgBarProceso.Size = new System.Drawing.Size(575, 23);
             this.prgBarProceso.TabIndex = 6;
@@ -222,7 +222,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(688, 247);
+            this.ClientSize = new System.Drawing.Size(688, 252);
             this.Controls.Add(this.groupBox1);
             this.Name = "formaMigracion";
             this.Text = "Migración Geodatabase IGAC V1";

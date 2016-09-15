@@ -11,6 +11,7 @@ using ESRI.ArcGIS.Geoprocessing;
 using ESRI.ArcGIS.esriSystem;
 using System.Runtime.InteropServices;
 using ESRI.ArcGIS.Carto;
+using System.IO;
 
 
 namespace Migracion_Geodatabase
@@ -18,7 +19,7 @@ namespace Migracion_Geodatabase
     public class Append_Custom
     {
 
-        public string InsertFeaturesUsingCursor(string sfeatureClassEntrada, string sfeatureClassSalida, string Type)
+        public string InsertFeaturesUsingCursor(string sfeatureClassEntrada, string sfeatureClassSalida, string Type, bool SDE)
         {
             try
             {
@@ -50,7 +51,10 @@ namespace Migracion_Geodatabase
                         for (int j = 0; j < FieldsEntrada.FieldCount; j++)
                         {
                             string NombreEntrada = FieldsEntrada.get_Field(j).Name;
-                            if (NombreEntrada.ToUpper() != "SHAPE" && NombreEntrada.ToUpper() != "SHAPE_LENGTH" && NombreEntrada.ToUpper() != "SHAPE_AREA" && NombreEntrada.ToUpper() != "OVERRIDE")
+                            if (NombreEntrada.ToUpper() != "SHAPE" && 
+                                NombreEntrada.ToUpper() != "SHAPE_LENGTH" &&NombreEntrada.ToUpper() != "SHAPE.LENGTH"&&
+                                NombreEntrada.ToUpper() != "SHAPE_AREA" && NombreEntrada.ToUpper() != "SHAPE.AREA" &&
+                                NombreEntrada.ToUpper() != "OVERRIDE")
                             {
                                 if (NombreSalida.ToUpper() == NombreEntrada.ToUpper())
                                 {
@@ -69,7 +73,10 @@ namespace Migracion_Geodatabase
                         for (int j = 0; j < FieldsEntradaAnot.FieldCount; j++)
                         {
                             string NombreEntrada = FieldsEntradaAnot.get_Field(j).Name;
-                            if (NombreEntrada.ToUpper() != "SHAPE" && NombreEntrada.ToUpper() != "SHAPE_LENGTH" && NombreEntrada.ToUpper() != "SHAPE_AREA" && NombreEntrada.ToUpper() != "OVERRIDE")
+                            if (NombreEntrada.ToUpper() != "SHAPE" &&
+                                NombreEntrada.ToUpper() != "SHAPE_LENGTH" && NombreEntrada.ToUpper() != "SHAPE.LENGTH" &&
+                                NombreEntrada.ToUpper() != "SHAPE_AREA" && NombreEntrada.ToUpper() != "SHAPE.AREA" && 
+                                NombreEntrada.ToUpper() != "OVERRIDE")
                             {
                                 if (NombreSalida.ToUpper() == NombreEntrada.ToUpper())
                                 {
@@ -87,8 +94,15 @@ namespace Migracion_Geodatabase
                     IWorkspaceEdit workspaceEdit = (IWorkspaceEdit)workspace;
 
                     //Start an edit session and operation
-                    workspaceEdit.StartEditing(true);
-                    workspaceEdit.StartEditOperation();
+                    if (SDE == false)
+                    {
+                        workspaceEdit.StartEditing(true);
+                        workspaceEdit.StartEditOperation();
+                    }
+                    else
+                    {
+                        startEditing(featureClassSalida);
+                    }
 
 
                     IFeatureCursor searchCursor = featureClassEntrada.Search(null, true);
@@ -147,8 +161,17 @@ namespace Migracion_Geodatabase
                     insertCursor.Flush();
 
                     //cargar Anotacion
-                    workspaceEdit.StopEditOperation();
-                    workspaceEdit.StopEditing(true);
+
+                    if (SDE == false)
+                    {
+                        workspaceEdit.StopEditOperation();
+                        workspaceEdit.StopEditing(true);
+                    }
+                    else
+                    {
+                        stopEditing(featureClassSalida);
+                    }
+                    
 
                     IFeatureCursor searchCursorAnot = featureClassEntradaAnot.Search(null, true);
                     // IFeatureCursor insertCursorAnot = featureClassSalidaAnot.Insert(true);
@@ -158,8 +181,15 @@ namespace Migracion_Geodatabase
                     //comReleaser.ManageLifetime(insertCursorAnot);
 
 
-                    workspaceEdit.StartEditing(true);
-                    workspaceEdit.StartEditOperation();
+                    if (SDE == false)
+                    {
+                        workspaceEdit.StartEditing(true);
+                        workspaceEdit.StartEditOperation();
+                    }
+                    else
+                    {
+                        startEditing(featureClassSalidaAnot);
+                    }
 
                     while ((featureAnot = searchCursorAnot.NextFeature()) != null)
                     {
@@ -180,7 +210,7 @@ namespace Migracion_Geodatabase
                             {
 
 
-                                if (index != -1 && campo.ToUpper() != "FEATUREID" && campo.ToUpper() != "OBJECTID")
+                                if (index != -1 && campo.ToUpper() != "FEATUREID" && campo.ToUpper() != "OBJECTID" && pField.Editable)
                                 {
                                     featureSalidaAnot.set_Value(indexSalida, featureAnot.get_Value(index));
 
@@ -224,8 +254,15 @@ namespace Migracion_Geodatabase
 
                     }
 
-                    workspaceEdit.StopEditOperation();
-                    workspaceEdit.StopEditing(true);
+                    if (SDE == false)
+                    {
+                        workspaceEdit.StopEditOperation();
+                        workspaceEdit.StopEditing(true);
+                    }
+                    else
+                    {
+                        stopEditing(featureClassSalidaAnot);
+                    }
 
 
                 }
@@ -242,29 +279,80 @@ namespace Migracion_Geodatabase
                 string[] RutaCompletaOutAnot = sfeatureClassSalida.Split(separators, StringSplitOptions.RemoveEmptyEntries);
                 int indexOut = RutaCompletaInAnot.Length;
 
-                string Resultado = RutaCompletaInAnot[indexIn - 1] + "  " +
-                    countInAnot + "  " +
-                    RutaCompletaOutAnot[indexOut - 1] + "  " +
+                string Resultado = RutaCompletaInAnot[indexIn - 1] + "," +
+                    countInAnot + "," +
+                    RutaCompletaOutAnot[indexOut - 1] + "," +
                     (countOutAnotOut - countOutAnot).ToString()+ "\n"+
-                    RutaCompletaInAnot[indexIn - 1].Replace("_Anot","") + "  " +
-                    countInFeat + "  " +
-                    RutaCompletaOutAnot[indexOut - 1].Replace("_Anot", "") + "  " +
-                    (countOutFeatOut - countOutFeat).ToString() + "\n"
+                    RutaCompletaInAnot[indexIn - 1].Replace("_Anot","") + "," +
+                    countInFeat + "," +
+                    RutaCompletaOutAnot[indexOut - 1].Replace("_Anot", "") + "," +
+                    (countOutFeatOut - countOutFeat).ToString()
 
                     ;
 
 
                 return Resultado;
-            }
+           }
                 
             catch(Exception Ex)
             {
                 MessageBox.Show("Error Cargando la capa: " + sfeatureClassEntrada + "..." + Ex.Message);
-                return "";
-            }
+               return "";
+           }
         }
   
-    
+        public void startEditing(IFeatureClass pFeatureClass)
+        {
+            IDataset dataset = (IDataset)pFeatureClass;
+            IWorkspace workspace = dataset.Workspace;
+
+            IMultiuserWorkspaceEdit muWorkspaceEdit = (IMultiuserWorkspaceEdit)workspace;
+            IWorkspaceEdit workspaceEdit = (IWorkspaceEdit)workspace;
+            muWorkspaceEdit.StartMultiuserEditing(esriMultiuserEditSessionMode.esriMESMVersioned);
+            workspaceEdit.StartEditOperation();
+
+        }
+
+        public void stopEditing(IFeatureClass pFeatureClass)
+        {
+            IDataset dataset = (IDataset)pFeatureClass;
+            IWorkspace workspace = dataset.Workspace;
+
+            IMultiuserWorkspaceEdit muWorkspaceEdit = (IMultiuserWorkspaceEdit)workspace;
+            IWorkspaceEdit workspaceEdit = (IWorkspaceEdit)workspace;
+            muWorkspaceEdit.StartMultiuserEditing(esriMultiuserEditSessionMode.esriMESMVersioned);
+
+            workspaceEdit.StopEditOperation();
+            try
+            {
+                // Stop the edit session. The saveEdits parameter indicates the edit session
+                // will be committed.
+                workspaceEdit.StopEditing(true);
+            }
+            catch (COMException comExc)
+            {
+                if (comExc.ErrorCode == (int)fdoError.FDO_E_VERSION_REDEFINED)
+                {
+                    // Get the version name.
+                    IVersion version = (IVersion)workspace;
+                    String versionName = version.VersionName;
+
+                    // Reconcile the version. Modify this code to reconcile and handle conflicts
+                    // in a manner appropriate for the specific application.
+                    IVersionEdit4 versionEdit4 = (IVersionEdit4)workspace;
+                    versionEdit4.Reconcile4(versionName, true, false, true, true);
+
+                    // Stop the edit session.
+                    workspaceEdit.StopEditing(true);
+                }
+                else
+                {
+                    // A different error has occurred. Handle in an appropriate way for the application.
+                    workspaceEdit.StopEditing(false);
+                }
+
+            }
+        }
         
 
         public string AppendTest(string sfeatureClassEntrada, string sfeatureClassSalida)
@@ -308,15 +396,15 @@ namespace Migracion_Geodatabase
                pCountFeatureIn = pGputility.OpenFeatureClassFromString(sfeatureClassEntrada);
                pCountFeatureOut = pGputility.OpenFeatureClassFromString(sfeatureClassSalida);
                string[] separators = {"/"};
-               string[] RutaCompletaIn = sfeatureClassEntrada.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+               string[] RutaCompletaIn = sfeatureClassEntrada.Split(System.IO.Path.PathSeparator);
                int indexIn = RutaCompletaIn.Length;
 
-               string[] RutaCompletaOut = sfeatureClassSalida.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+               string[] RutaCompletaOut = sfeatureClassSalida.Split(System.IO.Path.PathSeparator);
                int indexOut = RutaCompletaIn.Length;
 
-               Resultado = RutaCompletaIn[indexIn - 1] + "  " +
-                   pCountFeatureIn.FeatureCount(null).ToString() + "  " +
-                   RutaCompletaOut[indexOut - 1] + "  " +
+               Resultado = RutaCompletaIn[indexIn - 1] + "," +
+                   pCountFeatureIn.FeatureCount(null).ToString() + "," +
+                   RutaCompletaOut[indexOut - 1] + "," +
                    (pCountFeatureOut.FeatureCount(null) - countOutIn).ToString();
 
 
@@ -328,15 +416,15 @@ namespace Migracion_Geodatabase
                 pCountTableOut = pGputility.OpenTableFromString(sfeatureClassSalida);
 
                 string[] separators = { "/" };
-                string[] RutaCompletaIn = sfeatureClassEntrada.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+                string[] RutaCompletaIn = sfeatureClassEntrada.Split(System.IO.Path.PathSeparator);
                 int indexIn = RutaCompletaIn.Length;
 
-                string[] RutaCompletaOut = sfeatureClassSalida.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+                string[] RutaCompletaOut = sfeatureClassSalida.Split(System.IO.Path.PathSeparator);
                 int indexOut = RutaCompletaIn.Length;
 
-                Resultado = RutaCompletaIn[indexIn - 1] + "  " +
-                    pCountTableIn.RowCount(null).ToString() + "  " +
-                    RutaCompletaOut[indexOut - 1] + "  " +
+                Resultado = RutaCompletaIn[indexIn - 1] + "," +
+                    pCountTableIn.RowCount(null).ToString() + "," +
+                    RutaCompletaOut[indexOut - 1] + "," +
                     (pCountTableOut.RowCount(null) - countOutIn).ToString();
 
             }
@@ -359,7 +447,7 @@ namespace Migracion_Geodatabase
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error cargando El Raster " + sfeatureClassEntrada);
+                MessageBox.Show("Error cargando El Raster " + sfeatureClassEntrada + ex.Message);
                 return "";
 
             }

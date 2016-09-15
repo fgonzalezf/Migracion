@@ -16,9 +16,11 @@ namespace Migracion_Geodatabase
         {
             InitializeComponent();
             //Valores combobox
+            
             cmbBoxEsquemaSDE.Items.Add("ADM25MIL");
             cmbBoxEsquemaSDE.Items.Add("ADMCIENMIL");
             cmbBoxEsquemaSDE.Items.Add("ADMPRUEBAS");
+            cmbBoxEsquemaSDE.SelectedText = "ADM25MIL";
 
         }
 
@@ -58,7 +60,6 @@ namespace Migracion_Geodatabase
         private void btnMigrar_Click(object sender, EventArgs e)
         {
             RecorrerGDB arreglo = new RecorrerGDB();
-            string Imprimir="Terminado";
             List<List<string>> ListaFeatuaresClass=new List<List<string>>();
             
             
@@ -82,7 +83,7 @@ namespace Migracion_Geodatabase
                 if (txtBoxGeodatabaseSalida.Text.Contains(".sde"))
                 {
                     ListaFeatuaresClass = arreglo.Recorrer(txtBoxGeodatabaseEntrada.Text, txtBoxGeodatabaseSalida.Text, cmbBoxEsquemaSDE.SelectedItem.ToString(), false);
-                    MessageBox.Show(cmbBoxEsquemaSDE.SelectedItem.ToString());
+                    //MessageBox.Show(cmbBoxEsquemaSDE.SelectedItem.ToString());
                 }
                 else
                 {
@@ -94,8 +95,12 @@ namespace Migracion_Geodatabase
                 List<string> TipoCargue = ListaFeatuaresClass[3];
                 prgBarProceso.Maximum = Rutas_Entrada.Count;
                 using (System.IO.StreamWriter file =
-                new System.IO.StreamWriter(@txtBoxGeodatabaseEntrada.Text + ".txt"))
+               new System.IO.StreamWriter(System.IO.Path.GetDirectoryName(@txtBoxGeodatabaseEntrada.Text) +
+                    @"\" + "Log_Resultados_Migracion_" + System.IO.Path.GetFileNameWithoutExtension(@txtBoxGeodatabaseEntrada.Text) + "_" +
+                    System.IO.Path.GetFileNameWithoutExtension(@txtBoxGeodatabaseSalida.Text) + ".csv"))
                 {
+                    //encabezado
+                    file.WriteLine("FEATUARE O TABLA DE ENTRADA" + "," + "NUMERO DE ELEMENTOS" + "," + "FEATUARE O TABLA DE SALIDA" + "," + "NUMERO ELEMENTOS MIGRADOS");
                     for (int i = 0; i < Rutas_Entrada.Count; i++)
                     {
                         if (Rutas_Salida[i] != "..." && Tipo[i] != "Annotation" && Tipo[i] != "Raster")
@@ -105,11 +110,8 @@ namespace Migracion_Geodatabase
                             append.AppendTest(txtBoxGeodatabaseEntrada.Text + Path.DirectorySeparatorChar + Rutas_Entrada[i],
                                                              txtBoxGeodatabaseSalida.Text + Path.DirectorySeparatorChar + Rutas_Salida[i])
                                 );
-                            file.WriteLine(Rutas_Entrada[i] + "    ......      " + Rutas_Salida[i]);
-                            //MessageBox.Show("Cargando" + Rutas_Entrada[i]);                        
-                            lblProgreso.Text = "Cargando" + Rutas_Entrada[i];
-                            lblProgreso.Refresh();
-                            prgBarProceso.PerformStep();
+                            
+                            
                         }
                         else if (Rutas_Salida[i] != "..." && Tipo[i] == "Raster")
                         {
@@ -118,20 +120,35 @@ namespace Migracion_Geodatabase
                                 txtBoxGeodatabaseSalida.Text + Path.DirectorySeparatorChar + Rutas_Salida[i])
                                 );
                         }
+                        else if (Rutas_Salida[i] == "...")
+                        {
+
+                            file.WriteLine(txtBoxGeodatabaseEntrada.Text + Path.DirectorySeparatorChar + Rutas_Entrada[i] +
+                                "," + "CAPA NO MIGRADA" + "," +
+                                txtBoxGeodatabaseSalida.Text + Path.DirectorySeparatorChar + Rutas_Salida[i] + "," +
+                                "NO SE ENCONTRO LA CAPA EN EL ESQUEMA DE SALIDA");
+                        }
+                        lblProgreso.Width = 581;
+                        lblProgreso.Text = "Cargando ..." + Rutas_Entrada[i];
+                        lblProgreso.Refresh();
+                        prgBarProceso.PerformStep();
                     }
                 }
                 
             }
             else if (rdBtnRelacionandoAnotaciones.Checked==true)
             {
+                bool sde;
                 if (txtBoxGeodatabaseSalida.Text.Contains(".sde"))
                     {
                         ListaFeatuaresClass = arreglo.Recorrer(txtBoxGeodatabaseEntrada.Text, txtBoxGeodatabaseSalida.Text, cmbBoxEsquemaSDE.SelectedItem.ToString(),false);
-                        MessageBox.Show(cmbBoxEsquemaSDE.SelectedItem.ToString());
+                        //MessageBox.Show(cmbBoxEsquemaSDE.SelectedItem.ToString());
+                        sde = true;
                     }
                 else 
                 {
                     ListaFeatuaresClass = arreglo.Recorrer(txtBoxGeodatabaseEntrada.Text, txtBoxGeodatabaseSalida.Text, "", false);
+                    sde = false;
                 }
                 List<string> Rutas_Entrada = ListaFeatuaresClass[0];
                 List<string> Rutas_Salida = ListaFeatuaresClass[1];
@@ -140,8 +157,12 @@ namespace Migracion_Geodatabase
           
                 prgBarProceso.Maximum = Rutas_Entrada.Count;
                 using (System.IO.StreamWriter file =
-                new System.IO.StreamWriter(@txtBoxGeodatabaseEntrada.Text + ".txt"))
+                new System.IO.StreamWriter(System.IO.Path.GetDirectoryName(@txtBoxGeodatabaseEntrada.Text) +
+                    @"\" + "Log_Resultados_Migracion_" + System.IO.Path.GetFileNameWithoutExtension(@txtBoxGeodatabaseEntrada.Text) +"_"+
+                    System.IO.Path.GetFileNameWithoutExtension(@txtBoxGeodatabaseSalida.Text)+".csv"))
                 {
+                    //encabezado
+                    file.WriteLine("FEATUARE O TABLA DE ENTRADA" + "," + "NUMERO DE ELEMENTOS" + "," + "FEATUARE O TABLA DE SALIDA" + "," + "NUMERO ELEMENTOS MIGRADOS");
                     for (int i = 0; i < Rutas_Entrada.Count; i++)
                     {
                         string FeatAnot="";
@@ -154,7 +175,7 @@ namespace Migracion_Geodatabase
                                 file.WriteLine(
                                 append.InsertFeaturesUsingCursor(txtBoxGeodatabaseEntrada.Text + Path.DirectorySeparatorChar + Rutas_Entrada[i],
                                                                  txtBoxGeodatabaseSalida.Text + Path.DirectorySeparatorChar + Rutas_Salida[i],
-                                                                 Tipo[i])
+                                                                 Tipo[i], sde)
                                 );
                             }
                             else if (TipoCargue[i] == "Cargar" && Tipo[i] != "Raster")
@@ -174,12 +195,22 @@ namespace Migracion_Geodatabase
                                     txtBoxGeodatabaseSalida.Text + Path.DirectorySeparatorChar + Rutas_Salida[i])
                                     );
                             }
+                        }
+                            else if (Rutas_Salida[i] == "...")
+                            {
+
+                                file.WriteLine(txtBoxGeodatabaseEntrada.Text + Path.DirectorySeparatorChar + Rutas_Entrada[i] +
+                                    "," + "CAPA NO MIGRADA" + "," +
+                                    txtBoxGeodatabaseSalida.Text + Path.DirectorySeparatorChar + Rutas_Salida[i] + "," +
+                                    "NO SE ENCONTRO LA CAPA EN EL ESQUEMA DE SALIDA");
+                            }
                             
-                            //MessageBox.Show("Cargando" + Rutas_Entrada[i]);                        
+                            //MessageBox.Show("Cargando" + Rutas_Entrada[i]); 
+                            lblProgreso.Width = 581;
                             lblProgreso.Text = "Cargando" + Rutas_Entrada[i];
                             lblProgreso.Refresh();
                             prgBarProceso.PerformStep();
-                        }
+                        
                     }
                 }
 
@@ -189,7 +220,7 @@ namespace Migracion_Geodatabase
                 if (txtBoxGeodatabaseSalida.Text.Contains(".sde"))
                 {
                     ListaFeatuaresClass = arreglo.Recorrer(txtBoxGeodatabaseEntrada.Text, txtBoxGeodatabaseSalida.Text, cmbBoxEsquemaSDE.SelectedItem.ToString(), false);
-                    MessageBox.Show(cmbBoxEsquemaSDE.SelectedItem.ToString());
+                    //MessageBox.Show(cmbBoxEsquemaSDE.SelectedItem.ToString());
                 }
                 else
                 {
@@ -201,8 +232,12 @@ namespace Migracion_Geodatabase
                 List<string> TipoCargue = ListaFeatuaresClass[3];
                 prgBarProceso.Maximum = Rutas_Entrada.Count;
                 using (System.IO.StreamWriter file =
-                new System.IO.StreamWriter(@txtBoxGeodatabaseEntrada.Text + ".txt"))
+                new System.IO.StreamWriter(System.IO.Path.GetDirectoryName(@txtBoxGeodatabaseEntrada.Text) +
+                    @"\" + "Log_Resultados_Migracion_" + System.IO.Path.GetFileNameWithoutExtension(@txtBoxGeodatabaseEntrada.Text) + "_" +
+                    System.IO.Path.GetFileNameWithoutExtension(@txtBoxGeodatabaseSalida.Text) + ".csv"))
                 {
+                    //encabezado
+                    file.WriteLine("FEATUARE O TABLA DE ENTRADA" + "," + "NUMERO DE ELEMENTOS" + "," + "FEATUARE O TABLA DE SALIDA" + "," + "NUMERO ELEMENTOS MIGRADOS");
                     for (int i = 0; i < Rutas_Entrada.Count; i++)
                     {
                         if (Rutas_Salida[i] != "..." && Tipo[i] != "Annotation" && Tipo[i] != "Raster")
@@ -212,11 +247,9 @@ namespace Migracion_Geodatabase
                             append.AppendTest(txtBoxGeodatabaseEntrada.Text + Path.DirectorySeparatorChar + Rutas_Entrada[i],
                                                              txtBoxGeodatabaseSalida.Text + Path.DirectorySeparatorChar + Rutas_Salida[i])
                                 );
-                            file.WriteLine(Rutas_Entrada[i] + "    ......      " + Rutas_Salida[i]);
+                            
                             //MessageBox.Show("Cargando" + Rutas_Entrada[i]);                        
-                            lblProgreso.Text = "Cargando" + Rutas_Entrada[i];
-                            lblProgreso.Refresh();
-                            prgBarProceso.PerformStep();
+                            
                         }
                         else if (Rutas_Salida[i] != "..." && Tipo[i] == "Raster")
                         {
@@ -225,6 +258,18 @@ namespace Migracion_Geodatabase
                                 txtBoxGeodatabaseSalida.Text + Path.DirectorySeparatorChar + Rutas_Salida[i])
                                 );
                         }
+                        else if (Rutas_Salida[i] == "...")
+                        {
+
+                            file.WriteLine(txtBoxGeodatabaseEntrada.Text + Path.DirectorySeparatorChar + Rutas_Entrada[i] +
+                                "," + "CAPA NO MIGRADA" + "," +
+                                txtBoxGeodatabaseSalida.Text + Path.DirectorySeparatorChar + Rutas_Salida[i] + "," +
+                                "NO SE ENCONTRO LA CAPA EN EL ESQUEMA DE SALIDA");
+                        }
+                        lblProgreso.Width = 581;
+                        lblProgreso.Text = "Cargando" + Rutas_Entrada[i];
+                        lblProgreso.Refresh();
+                        prgBarProceso.PerformStep();
                     }
                 }
 
@@ -234,7 +279,7 @@ namespace Migracion_Geodatabase
                 if (txtBoxGeodatabaseSalida.Text.Contains(".sde"))
                 {
                     ListaFeatuaresClass = arreglo.Recorrer(txtBoxGeodatabaseEntrada.Text, txtBoxGeodatabaseSalida.Text, cmbBoxEsquemaSDE.SelectedItem.ToString(), false);
-                    MessageBox.Show(cmbBoxEsquemaSDE.SelectedItem.ToString());
+                    //MessageBox.Show(cmbBoxEsquemaSDE.SelectedItem.ToString());
                 }
                 else
                 {
@@ -246,8 +291,12 @@ namespace Migracion_Geodatabase
                 List<string> TipoCargue = ListaFeatuaresClass[3];
                 prgBarProceso.Maximum = Rutas_Entrada.Count;
                 using (System.IO.StreamWriter file =
-                new System.IO.StreamWriter(@txtBoxGeodatabaseEntrada.Text + ".txt"))
+                new System.IO.StreamWriter(System.IO.Path.GetDirectoryName(@txtBoxGeodatabaseEntrada.Text) +
+                    @"\" + "Log_Resultados_Migracion_" + System.IO.Path.GetFileNameWithoutExtension(@txtBoxGeodatabaseEntrada.Text) + "_" +
+                    System.IO.Path.GetFileNameWithoutExtension(@txtBoxGeodatabaseSalida.Text) + ".csv"))
                 {
+                    //encabezado
+                    file.WriteLine("FEATUARE O TABLA DE ENTRADA" + "," + "NUMERO DE ELEMENTOS" + "," + "FEATUARE O TABLA DE SALIDA"+","+"NUMERO ELEMENTOS MIGRADOS");
                     for (int i = 0; i < Rutas_Entrada.Count; i++)
                     {
                         if (Rutas_Salida[i] != "..." && Tipo[i]!="Raster")
@@ -257,11 +306,9 @@ namespace Migracion_Geodatabase
                             append.AppendTest(txtBoxGeodatabaseEntrada.Text + Path.DirectorySeparatorChar + Rutas_Entrada[i],
                                                              txtBoxGeodatabaseSalida.Text + Path.DirectorySeparatorChar + Rutas_Salida[i])
                                 );
-                            file.WriteLine(Rutas_Entrada[i] + "    ......      " + Rutas_Salida[i]);
+                            
                             //MessageBox.Show("Cargando" + Rutas_Entrada[i]);                        
-                            lblProgreso.Text = "Cargando" + Rutas_Entrada[i];
-                            lblProgreso.Refresh();
-                            prgBarProceso.PerformStep();
+                            
                         }
                         else if (Rutas_Salida[i] != "..." && Tipo[i]=="Raster")
                         {
@@ -270,13 +317,26 @@ namespace Migracion_Geodatabase
                                 txtBoxGeodatabaseSalida.Text + Path.DirectorySeparatorChar + Rutas_Salida[i])
                                 );
                         }
+
+                        else if (Rutas_Salida[i] == "...")
+                        {
+
+                            file.WriteLine(txtBoxGeodatabaseEntrada.Text + Path.DirectorySeparatorChar + Rutas_Entrada[i] + 
+                                "," + "CAPA NO MIGRADA" + "," +
+                                txtBoxGeodatabaseSalida.Text + Path.DirectorySeparatorChar + Rutas_Salida[i] + "," + 
+                                "NO SE ENCONTRO LA CAPA EN EL ESQUEMA DE SALIDA");
+                        }
+                        lblProgreso.Width = 581;
+                        lblProgreso.Text = "Cargando" + Rutas_Entrada[i];
+                        lblProgreso.Refresh();
+                        prgBarProceso.PerformStep();
                     }
                 }
 
             }
 
             
-            MessageBox.Show("Finalizado");
+            MessageBox.Show("PROCESO FINALIZADO");
         }
 
         private void rdBtnAutocrear_CheckedChanged(object sender, EventArgs e)

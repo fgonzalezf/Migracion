@@ -60,6 +60,7 @@
     <Reference Include="ESRI.ArcGIS.System">
       <Private>False</Private>
     </Reference>
+    <Reference Include="System.IO.Log" />
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>

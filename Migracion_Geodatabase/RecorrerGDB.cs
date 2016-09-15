@@ -465,7 +465,7 @@ namespace Migracion_Geodatabase
                             string nameFc = pSdeDSName.Name;
                             string InFc = @Geodatabase + Path.DirectorySeparatorChar + pSdeDSName.Name;
                             string OutFc = @GeodatabaseSalida + Path.DirectorySeparatorChar + pSdeDSName.Name;
-                            pRasterDatasetIn = pGputility.OpenRasterDatasetFromString(InFc);
+                            //pRasterDatasetIn = pGputility.OpenRasterDatasetFromString(InFc);
                             
                             
                                 try
@@ -506,7 +506,7 @@ namespace Migracion_Geodatabase
                             string nameFcOut = EsquemaSDE + "." + pSdeDSName.Name;
                             string InFc = @Geodatabase + Path.DirectorySeparatorChar + pSdeDSName.Name;
                             string OutFc = @GeodatabaseSalida + Path.DirectorySeparatorChar + EsquemaSDE + "." + pSdeDSName.Name;
-                            pRasterDatasetIn = pGputility.OpenRasterDatasetFromString(InFc);
+                            //pRasterDatasetIn = pGputility.OpenRasterDatasetFromString(InFc);
 
                             try
                             {
